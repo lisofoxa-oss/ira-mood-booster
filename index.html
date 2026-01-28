@@ -10,30 +10,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffe4f0 100%);
+            background: #f8f9ff url('bg-pattern.jpg') repeat;
             min-height: 100vh; overflow-x: hidden;
-            transition: background 1s ease;
         }
-        body.winter { background: linear-gradient(135deg, #e6f7ff 0%, #f0f8ff 100%); }
-        body.spring { background: linear-gradient(135deg, #fff5f5 0%, #ffe4e1 100%); }
-        body.summer { background: linear-gradient(135deg, #fff9e6 0%, #fff0b3 100%); }
-        body.autumn { background: linear-gradient(135deg, #fff8e6 0%, #ffe8cc 100%); }
-        
         #app { 
             padding: 25px 20px; max-width: 400px; margin: 0 auto; 
             position: relative; min-height: 100vh;
         }
-        
-        .theme-toggle {
-            position: absolute; top: 15px; left: 15px; z-index: 1000;
-            width: 55px; height: 55px; border: none; border-radius: 15px;
-            background: linear-gradient(135deg, #4caf50, #8bc34a); color: white;
-            font-size: 1.4em; font-weight: bold; cursor: pointer; 
-            box-shadow: 0 8px 25px rgba(76,175,80,0.4);
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .theme-toggle:hover { transform: scale(1.1) rotate(10deg); }
         
         .music-toggle {
             position: absolute; top: 15px; right: 15px; z-index: 1000;
@@ -52,12 +35,7 @@
             background: rgba(255,255,255,0.95); padding: 25px; 
             border-radius: 35px; box-shadow: 0 20px 50px rgba(255,182,193,0.3);
             backdrop-filter: blur(20px);
-            transition: all 0.5s ease;
         }
-        body.winter .header { box-shadow: 0 20px 50px rgba(173,216,230,0.4); }
-        body.spring .header { box-shadow: 0 20px 50px rgba(255,182,193,0.5); }
-        body.summer .header { box-shadow: 0 20px 50px rgba(255,215,0,0.4); }
-        body.autumn .header { box-shadow: 0 20px 50px rgba(255,165,0,0.4); }
         
         .header img { 
             width: 100px; height: 100px; margin-right: 25px; 
@@ -89,23 +67,13 @@
             background: linear-gradient(45deg, #ff1493, #ff69b4); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             font-size: 2.1em; font-weight: 800; margin: 0; flex: 1;
-            transition: background 0.5s ease;
         }
-        body.winter h1 { background: linear-gradient(45deg, #1e88e5, #4fc3f7); }
-        body.spring h1 { background: linear-gradient(45deg, #8bc34a, #cddc39); }
-        body.summer h1 { background: linear-gradient(45deg, #ffc107, #ff9800); }
-        body.autumn h1 { background: linear-gradient(45deg, #ff9800, #ff5722); }
         
         .mood-indicator {
             text-align: center; margin: 15px 0;
             font-size: 1.1em; font-weight: 600;
             color: #ff69b4;
-            transition: color 0.5s ease;
         }
-        body.winter .mood-indicator { color: #4fc3f7; }
-        body.spring .mood-indicator { color: #8bc34a; }
-        body.summer .mood-indicator { color: #ffc107; }
-        body.autumn .mood-indicator { color: #ff9800; }
         
         .emoji-grid {
             display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; 
@@ -113,23 +81,6 @@
             background: rgba(255,255,255,0.92); border-radius: 35px; 
             box-shadow: 0 20px 60px rgba(255,105,180,0.25);
             backdrop-filter: blur(25px); border: 3px solid rgba(255,182,193,0.4);
-            transition: all 0.5s ease;
-        }
-        body.winter .emoji-grid { 
-            box-shadow: 0 20px 60px rgba(173,216,230,0.3);
-            border-color: rgba(173,216,230,0.5);
-        }
-        body.spring .emoji-grid { 
-            box-shadow: 0 20px 60px rgba(139,195,74,0.3);
-            border-color: rgba(139,195,74,0.5);
-        }
-        body.summer .emoji-grid { 
-            box-shadow: 0 20px 60px rgba(255,193,7,0.3);
-            border-color: rgba(255,193,7,0.5);
-        }
-        body.autumn .emoji-grid { 
-            box-shadow: 0 20px 60px rgba(255,152,0,0.3);
-            border-color: rgba(255,152,0,0.5);
         }
         
         .emoji-btn {
@@ -156,10 +107,6 @@
             box-shadow: 0 25px 70px rgba(255,105,180,0.6) !important;
             animation: selectedPulse 1s infinite;
         }
-        body.winter .emoji-btn.selected { background: linear-gradient(135deg, #1e88e5, #4fc3f7) !important; }
-        body.spring .emoji-btn.selected { background: linear-gradient(135deg, #8bc34a, #cddc39) !important; }
-        body.summer .emoji-btn.selected { background: linear-gradient(135deg, #ffc107, #ff9800) !important; }
-        body.autumn .emoji-btn.selected { background: linear-gradient(135deg, #ff9800, #ff5722) !important; }
         
         @keyframes selectedPulse {
             0%, 100% { box-shadow: 0 25px 70px rgba(255,105,180,0.6); }
@@ -175,18 +122,6 @@
             box-shadow: 0 15px 45px rgba(255,20,147,0.4);
             animation: gradientShift 3s ease infinite; position: relative; overflow: hidden;
         }
-        body.winter .generate-btn, body.winter .share-btn { 
-            background: linear-gradient(45deg, #1e88e5, #4fc3f7, #bbdefb);
-        }
-        body.spring .generate-btn, body.spring .share-btn { 
-            background: linear-gradient(45deg, #8bc34a, #cddc39, #d4e157);
-        }
-        body.summer .generate-btn, body.summer .share-btn { 
-            background: linear-gradient(45deg, #ffc107, #ff9800, #ffeb3b);
-        }
-        body.autumn .generate-btn, body.autumn .share-btn { 
-            background: linear-gradient(45deg, #ff9800, #ff5722, #ffab40);
-        }
         
         @keyframes gradientShift {
             0%, 100% { background-position: 0% 50%; }
@@ -196,93 +131,7 @@
             transform: translateY(-5px) scale(1.03); 
             box-shadow: 0 25px 60px rgba(255,20,147,0.6);
         }
-        body.winter .generate-btn:hover:not(:disabled), body.winter .share-btn:hover { 
-            box-shadow: 0 25px 60px rgba(30,136,229,0.6);
-        }
-        body.spring .generate-btn:hover:not(:disabled), body.spring .share-btn:hover { 
-            box-shadow: 0 25px 60px rgba(139,195,74,0.6);
-        }
-        body.summer .generate-btn:hover:not(:disabled), body.summer .share-btn:hover { 
-            box-shadow: 0 25px 60px rgba(255,193,7,0.6);
-        }
-        body.autumn .generate-btn:hover:not(:disabled), body.autumn .share-btn:hover { 
-            box-shadow: 0 25px 60px rgba(255,152,0,0.6);
-        }
         .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .advice {
-            background: rgba(255,255,255,0.97); padding: 45px 30px 35px;
-            border-radius: 40px; text-align: center; margin: 35px 0;
-            box-shadow: 0 25px 80px rgba(255,105,180,0.35);
-            position: relative; overflow: hidden; border: 4px solid rgba(255,182,193,0.5);
-            backdrop-filter: blur(25px);
-            transition: all 0.5s ease;
-        }
-        body.winter .advice { 
-            box-shadow: 0 25px 80px rgba(173,216,230,0.4);
-            border-color: rgba(173,216,230,0.6);
-        }
-        body.spring .advice { 
-            box-shadow: 0 25px 80px rgba(139,195,74,0.4);
-            border-color: rgba(139,195,74,0.6);
-        }
-        body.summer .advice { 
-            box-shadow: 0 25px 80px rgba(255,193,7,0.4);
-            border-color: rgba(255,193,7,0.6);
-        }
-        body.autumn .advice { 
-            box-shadow: 0 25px 80px rgba(255,152,0,0.4);
-            border-color: rgba(255,152,0,0.6);
-        }
-        
-        .advice img { 
-            position: absolute; left: 30px; top: 50%; 
-            transform: translateY(-50%); width: 95px; height: 95px;
-            animation: kittyWink 3s infinite;
-        }
-        @keyframes kittyWink {
-            0%, 85% { transform: translateY(-50%) scale(1); }
-            90% { transform: translateY(-55%) scale(0.95); }
-            100% { transform: translateY(-50%) scale(1); }
-        }
-        .kitty-talk { 
-            font-size: 1.55em; font-weight: 900; 
-            background: linear-gradient(45deg, #ff1493, #ff69b4);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 18px; margin-left: 120px; position: relative;
-            transition: background 0.5s ease;
-        }
-        body.winter .kitty-talk { background: linear-gradient(45deg, #1e88e5, #4fc3f7); }
-        body.spring .kitty-talk { background: linear-gradient(45deg, #8bc34a, #cddc39); }
-        body.summer .kitty-talk { background: linear-gradient(45deg, #ffc107, #ff9800); }
-        body.autumn .kitty-talk { background: linear-gradient(45deg, #ff9800, #ff5722); }
-        
-        .advice-text { 
-            font-size: 1.35em; color: #333; line-height: 1.6; 
-            margin-left: 120px; margin-bottom: 20px; font-weight: 600;
-            min-height: 80px;
-            transition: color 0.5s ease;
-        }
-        body.winter .advice-text { color: #1e88e5; }
-        body.spring .advice-text { color: #8bc34a; }
-        body.summer .advice-text { color: #ff9800; }
-        body.autumn .advice-text { color: #ff5722; }
-        
-        .kitty-compliment {
-            font-size: 1.1em; color: #ff69b4; font-weight: 700;
-            margin-left: 120px; position: relative; margin-top: 15px;
-            animation: sparkleText 2s ease-in-out infinite;
-            transition: color 0.5s ease;
-        }
-        body.winter .kitty-compliment { color: #4fc3f7; }
-        body.spring .kitty-compliment { color: #cddc39; }
-        body.summer .kitty-compliment { color: #ffeb3b; }
-        body.autumn .kitty-compliment { color: #ffab40; }
-        
-        @keyframes sparkleText {
-            0%, 100% { text-shadow: 0 0 10px rgba(255,105,180,0.5); }
-            50% { text-shadow: 0 0 25px rgba(255,105,180,0.8), 0 0 35px rgba(255,182,193,0.6); }
-        }
         
         .copy-status {
             background: linear-gradient(135deg, rgba(76,175,80,0.9), rgba(129,199,132,0.8));
@@ -297,34 +146,12 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,245,248,0.9));
             border-radius: 30px; margin: 25px 0; box-shadow: 0 20px 60px rgba(255,182,193,0.3);
             border: 3px solid rgba(255,105,180,0.4); backdrop-filter: blur(20px);
-            transition: all 0.5s ease;
-        }
-        body.winter .stats { 
-            box-shadow: 0 20px 60px rgba(173,216,230,0.3);
-            border-color: rgba(173,216,230,0.5);
-        }
-        body.spring .stats { 
-            box-shadow: 0 20px 60px rgba(139,195,74,0.3);
-            border-color: rgba(139,195,74,0.5);
-        }
-        body.summer .stats { 
-            box-shadow: 0 20px 60px rgba(255,193,7,0.3);
-            border-color: rgba(255,193,7,0.5);
-        }
-        body.autumn .stats { 
-            box-shadow: 0 20px 60px rgba(255,152,0,0.3);
-            border-color: rgba(255,152,0,0.5);
         }
         
         .stat { 
             color: #ff1493; font-weight: 800; font-size: 1.25em; 
             text-shadow: 0 2px 10px rgba(255,105,180,0.3);
-            transition: color 0.5s ease;
         }
-        body.winter .stat { color: #1e88e5; text-shadow: 0 2px 10px rgba(30,136,229,0.3); }
-        body.spring .stat { color: #8bc34a; text-shadow: 0 2px 10px rgba(139,195,74,0.3); }
-        body.summer .stat { color: #ff9800; text-shadow: 0 2px 10px rgba(255,152,0,0.3); }
-        body.autumn .stat { color: #ff5722; text-shadow: 0 2px 10px rgba(255,87,34,0.3); }
         
         .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; width: 100%; height: 100%; }
         .heart { 
@@ -332,10 +159,6 @@
             animation: floatUp 4.5s ease-out forwards;
             text-shadow: 0 0 10px rgba(255,105,180,0.8);
         }
-        body.winter .heart { color: #4fc3f7; text-shadow: 0 0 10px rgba(79,195,247,0.8); }
-        body.spring .heart { color: #cddc39; text-shadow: 0 0 10px rgba(205,220,57,0.8); }
-        body.summer .heart { color: #ffeb3b; text-shadow: 0 0 10px rgba(255,235,59,0.8); }
-        body.autumn .heart { color: #ffab40; text-shadow: 0 0 10px rgba(255,171,64,0.8); }
         
         @keyframes floatUp {
             0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
@@ -359,10 +182,49 @@
             position: relative;
         }
         
+        .advice-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); 
+            display: flex; align-items: center; justify-content: center; 
+            z-index: 1000; 
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .advice-modal.show { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+
+        .advice-content {
+            background: white; 
+            border-radius: 35px; 
+            width: 90%; 
+            max-width: 480px;
+            padding: 45px 35px;
+            box-shadow: 0 30px 100px rgba(255,105,180,0.6);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
         .close-btn {
-            position: absolute; top: 15px; right: 15px;
-            background: #ff69b4; color: white; border: none; border-radius: 50%;
-            width: 40px; height: 40px; font-size: 1.5em; cursor: pointer;
+            position: absolute; 
+            top: 15px; 
+            right: 15px;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white; 
+            border: none; 
+            border-radius: 50%;
+            width: 45px; 
+            height: 45px; 
+            font-size: 1.8em; 
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255,105,180,0.4);
+            transition: all 0.3s ease;
+        }
+        .close-btn:hover {
+            transform: scale(1.1) rotate(90deg);
         }
         
         .history-item {
@@ -394,10 +256,6 @@
 </head>
 <body>
     <div id="app">
-        <button class="theme-toggle" @click="cycleTheme" title="Сменить тему">
-            <span>{{ currentThemeIcon }}</span>
-        </button>
-        
         <button class="music-toggle" @click="toggleMusic" :class="{ active: isMusicOn }" title="Фоновая музыка">
             <span>{{ isMusicOn ? '🎵' : '🎶' }}</span>
         </button>
@@ -428,13 +286,6 @@
             {{ selectedEmojis.length < 3 ? `Выбери ещё ${3 - selectedEmojis.length} стикера! 💖` : 'Мяу-мяу! Дай совет от Kitty! ✨' }}
         </button>
 
-        <div v-if="currentAdvice" class="advice">
-            <img :src="kittyAdviceImage" alt="Kitty wink">
-            <div class="kitty-talk">😻 Kitty говорит:</div>
-            <div class="advice-text">{{ currentAdvice }}</div>
-            <div class="kitty-compliment">{{ currentCompliment }}</div>
-        </div>
-
         <button v-if="currentAdvice" class="share-btn" @click="shareAdvice">
             📋 Скопировать совет
         </button>
@@ -449,23 +300,18 @@
         
         <div class="hearts" ref="heartsContainer"></div>
         
-        <!-- Аудио -->
-        <audio ref="meowSound" preload="auto">
-            <source src="meow.mp3" type="audio/mpeg">
-            <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_3534ec662b.mp3" type="audio/mpeg">
-        </audio>
-        <audio ref="clickSound" preload="auto">
-            <source src="click.mp3" type="audio/mpeg">
-            <source src="https://cdn.pixabay.com/audio/2022/03/16/audio_6c1a96314c.mp3" type="audio/mpeg">
-        </audio>
-        <audio ref="bgMusic" loop preload="auto">
-            <source src="pink-chill.mp3" type="audio/mpeg">
-            <source src="https://cdn.pixabay.com/audio/2022/02/22/audio_5b8d5d8a9b.mp3" type="audio/mpeg">
-        </audio>
-        <audio ref="sparkleSound" preload="auto">
-            <source src="sparkle.mp3" type="audio/mpeg">
-            <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_7b4d1c7d9c.mp3" type="audio/mpeg">
-        </audio>
+        <!-- Модальное окно совета -->
+        <div class="advice-modal" :class="{ show: showAdviceModal }" @click="showAdviceModal = false">
+            <div class="advice-content" @click.stop>
+                <button class="close-btn" @click="showAdviceModal = false">✕</button>
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img :src="kittyAdviceImage" alt="Kitty" style="width: 120px; height: 120px; margin-bottom: 15px;">
+                    <div class="kitty-talk" style="font-size: 1.8em; margin: 0; background: linear-gradient(45deg, #ff1493, #ff69b4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;">😻 Kitty говорит:</div>
+                </div>
+                <div class="advice-text" style="font-size: 1.5em; color: #333; line-height: 1.6; margin: 0 0 30px 0; font-weight: 600;">{{ currentAdvice }}</div>
+                <div class="kitty-compliment" style="font-size: 1.3em; color: #ff69b4; font-weight: 700; margin: 0; animation: sparkleText 2s ease-in-out infinite;">{{ currentCompliment }}</div>
+            </div>
+        </div>
         
         <!-- Модальное окно истории -->
         <div class="history-modal" :class="{ show: showHistory }" @click="showHistory = false">
@@ -485,34 +331,27 @@
         <div class="easter-egg" ref="easterEgg" @click="triggerEasterEgg">
             🎁 Сюрприз для Иры!
         </div>
+        
+        <!-- Аудио -->
+        <audio ref="meowSound" preload="auto">
+            <source src="meow.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="clickSound" preload="auto">
+            <source src="click.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="bgMusic" loop preload="auto">
+            <source src="pink-chill.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="sparkleSound" preload="auto">
+            <source src="sparkle.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
     <script>
-        const { createApp, ref, onMounted, computed, watch } = Vue;
+        const { createApp, ref, onMounted, computed } = Vue;
         
         createApp({
             setup() {
-                // ========== ТЕМЫ ==========
-                const themes = {
-                    default: { icon: '🎀', name: 'Розовая мечта', class: '' },
-                    winter: { icon: '❄️', name: 'Зимняя сказка', class: 'winter' },
-                    spring: { icon: '🌸', name: 'Весенние мечты', class: 'spring' },
-                    summer: { icon: '☀️', name: 'Летние приключения', class: 'summer' },
-                    autumn: { icon: '🍂', name: 'Осенний уют', class: 'autumn' }
-                };
-                const currentTheme = ref('default');
-                
-                const cycleTheme = () => {
-                    const themeNames = Object.keys(themes);
-                    const currentIndex = themeNames.indexOf(currentTheme.value);
-                    currentTheme.value = themeNames[(currentIndex + 1) % themeNames.length];
-                    
-                    // Применяем класс темы к body
-                    document.body.className = themes[currentTheme.value].class;
-                };
-                
-                const currentThemeIcon = computed(() => themes[currentTheme.value].icon);
-                
                 // ========== ЭМОДЗИ и ИХ ЗНАЧЕНИЯ ==========
                 const emojiMeanings = {
                     '😻': { type: 'love', energy: 'tender', keywords: ['любовь', 'нежность', 'забота'] },
@@ -537,63 +376,52 @@
                 const selectedEmojis = ref([]);
                 
                 // ========== СОВЕТЫ НА ОСНОВЕ КОМБИНАЦИЙ ЭМОДЗИ ==========
-                // Красивые, душевные советы для каждой комбинации
                 const adviceDatabase = {
-                    // Любовь + Уют + Красота
                     '😻🐾🎀': [
                         'Ириша, сегодняшний день создан для того, чтобы окружить себя любовью и заботой. Завари себе чашечку любимого чая, надень самый мягкий халатик и позволь себе просто быть. Ты заслуживаешь этого уюта и нежности 💕',
                         'Знаешь, что самое прекрасное? Когда ты позволяешь себе быть красивой не для кого-то, а для себя. Сегодня уделите время себе любимой — примите ванну с пеной, наденьте красивое бельё и насладитесь моментом 🌸',
                         'Маленькие ритуалы заботы о себе — это и есть настоящая магия. Сегодняшний вечер посвяти созданию уюта вокруг себя: зажги свечи, включи любимую музыку и позволь дому наполниться твоей любовью ✨'
                     ],
-                    // Мечты + Магия + Звезда
                     '⭐✨😻': [
                         'Ириша, сегодня звёзды особенно ярко светят для тебя! Загадай желание, которое живёт в самом сердце. Иногда достаточно просто поверить в чудо, и оно начинает происходить вокруг тебя 🌟',
                         'Знаешь, что самое волшебное в мечтах? Они всегда ждут своего часа. Сегодня отличный день, чтобы открыть блокнот и записать всё, о чём ты мечтаешь. Каждое слово приближает тебя к исполнению желаний 💫',
                         'Иногда нужно просто остановиться и посмотреть на небо. Звёзды напоминают нам, что мы — часть чего-то большего и прекрасного. Позволь себе помечтать сегодня, не ограничивая фантазию 🌙'
                     ],
-                    // Сладости + Радость + Подарки
                     '🍓🎁🍭': [
                         'Жизнь слишком коротка, чтобы отказывать себе в маленьких радостях! Сегодня обязательно побалуй себя чем-то вкусненьким — может быть, тем тортиком, который ты так любишь? Счастье часто прячется в простых удовольствиях 🍰',
                         'Знаешь, что самое вкусное в жизни? Не только клубнички и конфетки, но и моменты радости, которые мы создаём сами. Сегодня отличный день для маленького праздника — устрой себе праздник без повода! 🎉',
                         'Иногда лучший подарок — это позволить себе быть счастливой прямо сейчас. Не жди особого случая, чтобы радоваться жизни. Сегодня — идеальный день для сладких мыслей и вкусных моментов 🍓'
                     ],
-                    // Уют + Мягкость + Спокойствие
                     '🐾🧸❄️': [
                         'Ириша, сегодня тело просит мягкости и тепла. Найди самый уютный уголок в доме, завернись в плед как кокон и позволь себе просто отдохнуть. Ты заслуживаешь этого спокойствия и заботы 🛋️',
                         'Знаешь, что такое настоящее блаженство? Это когда ты чувствуешь себя в безопасности и уюте. Сегодня создай вокруг себя атмосферу мягкости: пушистые носочки, тёплый плед и любимая книга под шум дождя 📖',
                         'Иногда лучшее, что можно сделать для себя — это позволить себе ничего не делать. Сегодня отличный день для ленивого утра в кровати, для долгого сна и для того, чтобы просто побыть с собой в тишине 🌙'
                     ],
-                    // Романтика + Глубокие чувства + Нежность
                     '💕💖🌸': [
                         'Ириша, сегодняшний день наполнен особенной нежностью. Позволь себе почувствовать каждую эмоцию, каждое прикосновение, каждый момент красоты вокруг. Ты достойна самой глубокой и искренней любви 💗',
                         'Знаешь, что самое прекрасное в любви? Это не громкие слова, а тихие моменты, когда сердце замирает от нежности. Сегодня отличный день, чтобы написать письмо себе любимой — о том, как ты себя любишь и ценишь 💌',
                         'Иногда самые глубокие чувства рождаются в тишине. Сегодня позволь себе побыть наедине с собой, послушать своё сердце и понять, чего ты действительно хочешь. Ты заслуживаешь быть счастливой 💝'
                     ],
-                    // Природа + Цветы + Обновление
                     '🌺🌸✨': [
                         'Ириша, природа сегодня особенно красива, потому что ты смотришь на неё глазами, полными любви. Обязательно выйди на прогулку, вдохни свежий воздух и позволь цветам наполнить твоё сердце радостью 🌷',
                         'Знаешь, что общего у тебя и весенних цветов? Вы обе прекрасны в своём расцвете! Сегодня отличный день, чтобы почувствовать себя частью природы — может быть, посадить цветок или просто полюбоваться закатом 🌺',
                         'Иногда нужно просто остановиться и заметить красоту вокруг. Сегодня мир дарит тебе особенные моменты — росу на лепестках, пение птиц, танец листьев на ветру. Позволь себе увидеть это волшебство 🌼'
                     ],
-                    // Праздник + Сюрприз + Волшебство
                     '🎂🎁🔔': [
                         'Ириша, каждый день может быть маленьким праздником, если посмотреть на него с правильной стороны! Сегодня создай себе атмосферу торжества — надень нарядную одежду, приготовь любимое блюдо и отпразднуй просто так, потому что ты этого заслуживаешь 🎊',
                         'Знаешь, что самое волшебное в сюрпризах? Иногда лучший подарок — это подарить радость себе самой. Сегодня устрой себе маленькое приключение — может быть, посети то место, о котором давно мечтала? 🎁',
                         'Иногда чудеса случаются тогда, когда мы их меньше всего ждём. Сегодня отличный день для того, чтобы поверить в магию и позволить себе ожидать чего-то прекрасного. Вселенная любит тебя и готовит сюрпризы ✨'
                     ],
-                    // Любовь + Звезда + Мечты
                     '😻⭐💖': [
                         'Ириша, твои мечты сегодня особенно яркие, потому что они рождены из любви к себе. Позволь себе мечтать о большом — о путешествиях, о любви, о счастье. Ты достойна всего самого прекрасного на свете 🌠',
                         'Знаешь, что самое красивое в звёздах? Они всегда горят, даже когда мы их не видим. Так и твои мечты — они живут в тебе, даже когда ты о них не думаешь. Сегодня вспомни о своих самых заветных желаниях 💫',
                         'Иногда нужно просто закрыть глаза и представить, каким ты хочешь видеть своё будущее. Сегодня отличный день для визуализации — нарисуй в воображении картину своей мечты и поверь, что она сбудется 🌟'
                     ],
-                    // Спокойствие + Уют + Мягкость
                     '❄️🐾🧸': [
                         'Ириша, сегодня твоё тело и душа просят покоя и тишины. Найди уютный уголок, где можно просто побыть с собой. Иногда лучшее, что можно сделать — это позволить себе отдохнуть без чувства вины 🕯️',
                         'Знаешь, что такое настоящее блаженство? Это когда ты чувствуешь себя в безопасности и комфорте. Сегодня создай вокруг себя атмосферу мягкости и тепла — пушистый плед, тёплые носочки и любимая музыка 🎵',
                         'Иногда мудрость — это умение остановиться. Сегодня отличный день для того, чтобы замедлиться, прислушаться к себе и понять, чего ты действительно хочешь. Позволь себе быть в гармонии с собой 🌙'
                     ],
-                    // Красота + Романтика + Нежность
                     '🎀💕🌸': [
                         'Ириша, сегодня ты особенно прекрасна, потому что красота исходит изнутри. Надень то платье, которое делает тебя счастливой, сделай причёску, которая тебе нравится, и позволь себе сиять! ✨',
                         'Знаешь, что самое романтичное? Это когда ты влюбляешься в себя. Сегодня отличный день для того, чтобы посмотреть в зеркало и сказать себе: "Я прекрасна, я достойна любви, я люблю себя" 💋',
@@ -625,11 +453,11 @@
                 
                 // ========== НАСТРОЕНИЯ КОТЁНКА ==========
                 const kittyMoods = {
-                    happy: { image: 'https://i.imgur.com/JwOQzGp.png', class: 'happy', description: 'Kitty в отличном настроении! 🌟' },
-                    surprised: { image: 'https://i.imgur.com/KvD7YlE.png', class: 'surprised', description: 'Kitty удивлён твоим выбором! 😮' },
-                    sleepy: { image: 'https://i.imgur.com/8vF4BqS.png', class: 'sleepy', description: 'Kitty хочет уюта и покоя... 😴' },
-                    loving: { image: 'https://i.imgur.com/JwOQzGp.png', class: 'happy', description: 'Kitty чувствует любовь! 💕' },
-                    magical: { image: 'https://i.imgur.com/JwOQzGp.png', class: 'happy', description: 'Kitty ощущает волшебство! ✨' }
+                    happy: { image: 'kitty-happy.png', class: 'happy', description: 'Kitty в отличном настроении! 🌟' },
+                    surprised: { image: 'kitty-surprised.png', class: 'surprised', description: 'Kitty удивлён твоим выбором! 😮' },
+                    sleepy: { image: 'kitty-sleepy.png', class: 'sleepy', description: 'Kitty хочет уюта и покоя... 😴' },
+                    loving: { image: 'kitty-love.png', class: 'happy', description: 'Kitty чувствует любовь! 💕' },
+                    magical: { image: 'kitty-magical.png', class: 'happy', description: 'Kitty ощущает волшебство! ✨' }
                 };
                 
                 // ========== СОСТОЯНИЯ ==========
@@ -637,15 +465,10 @@
                 const currentCompliment = ref('');
                 const currentMood = ref('happy');
                 const moodDescription = computed(() => kittyMoods[currentMood.value]?.description || '');
-                const kittyMoodImage = computed(() => kittyMoods[currentMood.value]?.image || 'https://i.imgur.com/JwOQzGp.png');
+                const kittyMoodImage = computed(() => kittyMoods[currentMood.value]?.image || 'kitty-happy.png');
                 const kittyMoodClass = computed(() => kittyMoods[currentMood.value]?.class || '');
                 const kittyAdviceImage = computed(() => {
-                    // Разные картинки для советов
-                    const images = [
-                        'https://i.imgur.com/KvD7YlE.png',
-                        'https://i.imgur.com/8vF4BqS.png',
-                        'https://i.imgur.com/JwOQzGp.png'
-                    ];
+                    const images = ['kitty-wink.png', 'kitty-happy.png'];
                     return images[Math.floor(Math.random() * images.length)];
                 });
                 
@@ -653,6 +476,7 @@
                 const copyStatus = ref({ show: false });
                 const isMusicOn = ref(false);
                 const showHistory = ref(false);
+                const showAdviceModal = ref(false);
                 const adviceHistory = ref([]);
                 const heartsContainer = ref(null);
                 const easterEgg = ref(null);
@@ -713,7 +537,7 @@
                             adviceHistory.value = JSON.parse(savedHistory);
                         }
                     } catch (e) {
-                        console.error('Error loading data:', e);
+                        console.error('Error loading ', e);
                     }
                 };
                 
@@ -812,6 +636,9 @@
                         console.error('Error saving data:', e);
                     }
                     
+                    // Показываем модальное окно
+                    showAdviceModal.value = true;
+                    
                     // Анимация сердец
                     createHeartsAnimation();
                     
@@ -833,15 +660,6 @@
                     heartsContainer.value.innerHTML = '';
                     
                     const heartEmojis = ['💖', '✨', '🌸', '🐾', '🎀', '😻', '💕', '⭐'];
-                    const themeColors = {
-                        default: ['#ff69b4', '#ff1493', '#ffc0cb'],
-                        winter: ['#4fc3f7', '#1e88e5', '#bbdefb'],
-                        spring: ['#cddc39', '#8bc34a', '#d4e157'],
-                        summer: ['#ffeb3b', '#ffc107', '#ff9800'],
-                        autumn: ['#ffab40', '#ff9800', '#ff5722']
-                    };
-                    
-                    const colors = themeColors[currentTheme.value] || themeColors.default;
                     
                     for (let i = 0; i < 15; i++) {
                         setTimeout(() => {
@@ -849,7 +667,6 @@
                             heart.className = 'heart';
                             heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
                             heart.style.left = `${Math.random() * 100}%`;
-                            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
                             heart.style.animationDuration = `${(Math.random() * 2 + 3).toFixed(1)}s`;
                             heart.style.fontSize = `${Math.random() * 1 + 1.5}em`;
                             heartsContainer.value.appendChild(heart);
@@ -919,21 +736,7 @@
                                 });
                         }
                     }
-                    
-                    // Случайная тема при первом запуске (с шансом 30%)
-                    if (Math.random() < 0.3 && stats.value.totalSmiles === 0) {
-                        cycleTheme();
-                    }
                 });
-                
-                // Watcher для автоматического сохранения истории
-                watch(adviceHistory, (newVal) => {
-                    try {
-                        localStorage.setItem('iraKittyHistory', JSON.stringify(newVal));
-                    } catch (e) {
-                        console.error('Error saving history:', e);
-                    }
-                }, { deep: true });
         
                 return { 
                     kittyEmojis, 
@@ -949,15 +752,14 @@
                     copyStatus, 
                     isMusicOn,
                     showHistory,
+                    showAdviceModal,
                     adviceHistory,
                     heartsContainer,
                     easterEgg,
-                    currentThemeIcon,
                     toggleEmoji, 
                     generateAdvice, 
                     shareAdvice, 
                     toggleMusic,
-                    cycleTheme,
                     triggerEasterEgg,
                     meowSound, 
                     clickSound, 
