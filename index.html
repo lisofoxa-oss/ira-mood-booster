@@ -8,195 +8,212 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: 'Segoe UI', -apple-system, sans-serif;
-            background: linear-gradient(135deg, #fff5f7 0%, #ffe4e6 25%, #ffccd5 50%, #fce4ec 100%);
-            min-height: 100vh; overflow-x: hidden; position: relative;
+            font-family: 'Segoe UI', sans-serif;
+            background: #fff5f7 url('bg-pattern.jpg') repeat;
+            min-height: 100vh; overflow-x: hidden;
         }
+        #app { padding: 25px 20px; max-width: 400px; margin: 0 auto; }
         
-        /* Kitty паттерн */
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(255,105,180,0.15) 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, rgba(255,182,193,0.2) 1px, transparent 1px);
-            background-size: 80px 80px, 120px 120px; z-index: -1;
+        .header { 
+            display: flex; align-items: center; margin-bottom: 30px;
+            background: rgba(255,255,255,0.9); padding: 20px; 
+            border-radius: 30px; box-shadow: 0 15px 40px rgba(255,182,193,0.3);
         }
-        
-        #app { padding: 25px 20px; max-width: 400px; margin: 0 auto; position: relative; }
-        
-        /* Главная Kitty рядом с заголовком */
-        .header-kitty { 
-            position: absolute; left: -120px; top: 10px; width: 100px; height: 100px;
-            z-index: 10; 
-        }
+        .header img { width: 90px; height: 90px; margin-right: 20px; animation: kittyFloat 3s infinite; }
+        @keyframes kittyFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
         
         h1 { 
-            text-align: center; background: linear-gradient(45deg, #ff1493, #ff69b4);
+            background: linear-gradient(45deg, #ff1493, #ff69b4); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-size: 1.9em; margin-bottom: 30px; font-weight: 800;
-            position: relative; padding-left: 120px;
+            font-size: 2em; font-weight: 800; margin: 0;
         }
         
-        .kitty-subtitle {
-            text-align: center; color: #ff69b4; font-size: 1.15em; 
-            margin-bottom: 35px; font-weight: 600;
+        .emoji-grid {
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 15px;
+            margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.9);
+            border-radius: 30px; box-shadow: 0 15px 45px rgba(255,105,180,0.2);
+        }
+        .emoji-btn {
+            width: 75px; height: 75px; border: none; border-radius: 25px;
+            font-size: 2.2em; background: rgba(255,255,255,0.9);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1); cursor: pointer;
+            transition: all 0.3s; border: 3px solid transparent;
+        }
+        .emoji-btn:hover { transform: scale(1.15); border-color: #ff69b4; }
+        .emoji-btn.selected { 
+            background: linear-gradient(45deg, #ff1493, #ff69b4) !important;
+            color: white; transform: scale(1.25) !important; animation: pulse 0.6s infinite;
         }
         
-        /* SVG Kitty персонаж */
-        .svg-kitty {
-            width: 100%; height: 100%;
+        .generate-btn {
+            width: 100%; padding: 20px; border: none; border-radius: 35px;
+            background: linear-gradient(45deg, #ff1493, #ff69b4); color: white;
+            font-size: 1.4em; font-weight: 700; cursor: pointer; margin: 25px 0;
+            box-shadow: 0 12px 35px rgba(255,20,147,0.4);
         }
-        
-        .kitty-head {
-            fill: #fff; stroke: #f5f5f5; stroke-width: 3;
-            animation: kittyFloatHead 3s ease-in-out infinite;
-        }
-        
-        .kitty-eye {
-            fill: #000; cx: 18%; cy: 25%; r: 4%;
-            animation: kittyBlink 4s infinite;
-        }
-        
-        .kitty-nose { fill: #ffdbac; stroke: #e6b590; stroke-width: 1; }
-        .kitty-bow {
-            fill: #ff1493; stroke: #fff; stroke-width: 2;
-            animation: bowWiggle 2s ease-in-out infinite;
-        }
-        
-        @keyframes kittyFloatHead {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-        }
-        
-        @keyframes kittyBlink {
-            0%, 90% { transform: scaleY(1); }
-            95% { transform: scaleY(0.2); }
-        }
-        
-        @keyframes bowWiggle {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
-        
-        .emoji-grid, .stats, .advice, .generate-btn {
-            /* Все остальные стили из предыдущей версии - glassmorphism, градиенты */
-            /* ... копируй оттуда ... */
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
-            border-radius: 30px; box-shadow: 0 15px 45px rgba(255,182,193,0.25);
-            border: 2px solid rgba(255,105,180,0.3);
-        }
-        
-        /* Упрощённо - полные стили копируй из предыдущего кода */
-        /* Добавим только Kitty-специфичные эффекты */
+        .generate-btn:hover:not(:disabled) { transform: translateY(-3px); }
+        .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .advice {
-            position: relative; padding-left: 120px;
+            background: rgba(255,255,255,0.95); padding: 35px 25px;
+            border-radius: 35px; text-align: center; margin: 30px 0;
+            box-shadow: 0 20px 60px rgba(255,105,180,0.3);
+            position: relative; overflow: hidden;
+        }
+        .advice img { 
+            position: absolute; left: 25px; top: 50%; 
+            transform: translateY(-50%); width: 85px; height: 85px;
+            animation: kittyWink 2s infinite;
+        }
+        @keyframes kittyWink {
+            0%, 90% { opacity: 1; }
+            95% { opacity: 0.7; transform: translateY(-50%) scale(0.95); }
         }
         
-        .advice-kitty { 
-            position: absolute; left: 20px; top: 50%; 
-            transform: translateY(-50%); width: 90px; height: 90px;
+        .kitty-talk { 
+            font-size: 1.45em; font-weight: 800; color: #ff1493;
+            margin-bottom: 15px; margin-left: 110px;
+        }
+        .advice-text { 
+            font-size: 1.25em; color: #333; line-height: 1.5; margin-left: 110px;
         }
         
-        .kitty-talk {
-            font-size: 1.4em; font-weight: 800; color: #ff1493;
-            margin-bottom: 12px; text-shadow: 0 2px 8px rgba(255,20,147,0.3);
+        .stats { 
+            display: flex; justify-content: space-around; padding: 20px;
+            background: rgba(255,255,255,0.9); border-radius: 25px; margin: 20px 0;
+            box-shadow: 0 12px 35px rgba(255,182,193,0.2);
         }
+        .stat { color: #ff1493; font-weight: 700; font-size: 1.15em; }
         
-        .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1000; }
+        .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
         .heart { 
-            position: absolute; font-size: 1.7em; 
-            animation: kittyFloat 4s ease-out forwards;
+            position: absolute; font-size: 1.8em; 
+            animation: floatUp 4s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- Главная Kitty в заголовке -->
-        <div class="header-kitty">
-            <svg class="svg-kitty" viewBox="0 0 100 100">
-                <!-- Голова -->
-                <ellipse class="kitty-head" cx="50" cy="45" rx="38" ry="40"/>
-                <!-- Глаза -->
-                <circle class="kitty-eye" cx="35" cy="35" r="5"/>
-                <circle class="kitty-eye" cx="65" cy="35" r="5"/>
-                <!-- Нос -->
-                <ellipse class="kitty-nose" cx="50" cy="45" rx="4" ry="3"/>
-                <!-- Красный бантик -->
-                <path class="kitty-bow" d="M 25 55 Q 25 45 35 45 Q 45 45 45 55 Q 45 65 35 65 Q 25 65 25 55 Z"/>
-                <path class="kitty-bow" d="M 55 55 Q 75 45 75 55 Q 75 65 65 65 Q 55 65 55 55 Z"/>
-                <circle fill="#fff" stroke="#ff1493" stroke-width="1.5" cx="50" cy="55" r="3"/>
-            </svg>
+        <div class="header">
+            <img src="kitty-head.png" alt="Kitty">
+            <h1>Hello Ириша! 🎀</h1>
         </div>
         
-        <h1>Hello Ириша!</h1>
-        <p class="kitty-subtitle">by Kitty Style 💕</p>
-        
-        <!-- Статистика -->
         <div class="stats" v-if="stats.todaySmiles > 0">
-            <div class="stat">Сегодня: {{ stats.todaySmiles }} 🎀</div>
-            <div class="stat">Всего: {{ stats.totalSmiles }} 🐾</div>
+            <div class="stat">Сегодня: {{ stats.todaySmiles }} 🐾</div>
+            <div class="stat">Всего: {{ stats.totalSmiles }} 💕</div>
         </div>
 
-        <!-- Эмодзи сетка -->
         <div class="emoji-grid">
-            <button v-for="(emoji, i) in kittyEmojis" :key="i" class="emoji-btn" 
-                :class="{ selected: selectedEmojis.includes(emoji) }"
+            <button v-for="(emoji, i) in kittyEmojis" :key="i"
+                class="emoji-btn" :class="{ selected: selectedEmojis.includes(emoji) }"
                 @click="toggleEmoji(emoji)" :disabled="selectedEmojis.length >= 3">
                 {{ emoji }}
             </button>
         </div>
 
         <button class="generate-btn" :disabled="selectedEmojis.length < 3" @click="generateAdvice">
-            {{ selectedEmojis.length < 3 ? `Выбери ещё ${3-selectedEmojis.length}! 💖` : 'Мяу! Совет от Kitty! ✨' }}
+            {{ selectedEmojis.length < 3 ? `Выбери ${3-selectedEmojis.length} стикера! 💖` : 'Мяу! Совет от Kitty! ✨' }}
         </button>
 
-        <!-- Совет с Kitty сбоку -->
         <div v-if="currentAdvice" class="advice">
-            <div class="advice-kitty">
-                <svg class="svg-kitty" viewBox="0 0 100 100">
-                    <!-- Та же Kitty SVG что выше -->
-                    <ellipse class="kitty-head" cx="50" cy="45" rx="38" ry="40"/>
-                    <circle class="kitty-eye" cx="35" cy="35" r="5"/>
-                    <circle fill="#ff1493" cx="65" cy="33" r="6"/> <!-- Подмигивающий глаз -->
-                    <ellipse class="kitty-nose" cx="50" cy="45" rx="4" ry="3"/>
-                    <path class="kitty-bow" d="M 25 55 Q 25 45 35 45 Q 45 45 45 55 Q 45 65 35 65 Q 25 65 25 55 Z"/>
-                    <path class="kitty-bow" d="M 55 55 Q 75 45 75 55 Q 75 65 65 65 Q 55 65 55 55 Z"/>
-                    <circle fill="#fff" stroke="#ff1493" stroke-width="1.5" cx="50" cy="55" r="3"/>
-                </svg>
-            </div>
-            <div class="kitty-talk">😻 Kitty шепчет:</div>
+            <img src="kitty-wink.png" alt="Kitty wink">
+            <div class="kitty-talk">😻 Kitty говорит:</div>
             <div class="advice-text">{{ currentAdvice }}</div>
-            <div style="margin-top: 15px; font-size: 1em; color: #ff69b4;">
-                Мяу-мяу, Ириша — ты супер! 🐾💕
+            <div style="margin-top: 20px; color: #ff69b4; font-weight: 600;">
+                Ириша — ты лучшая! 🐾💕
             </div>
         </div>
 
-        <button v-if="currentAdvice" class="generate-btn share-btn" @click="shareAdvice">
-            Поделиться с Kitty! 🌸
-        </button>
+        <button v-if="currentAdvice" class="generate-btn" style="background: linear-gradient(45deg, #ff69b4, #ff1493);"
+            @click="shareAdvice">Поделиться в ТГ! 🌸</button>
     </div>
 
     <div class="hearts" ref="heartsContainer"></div>
 
     <script>
-        // Тот же JS код что в предыдущей версии
-        // ... (moods, actions, stats, toggleEmoji, generateAdvice, createKittyHearts и т.д.)
-        
         const { createApp, ref, onMounted } = Vue;
+        
         createApp({
             setup() {
-                const kittyEmojis = ['😻', '🐾', '🎀', '🌸', '💕', '⭐', '🍓', '✨'];
+                const kittyEmojis = ['😻','🐾','🎀','🌸','💕','⭐','🍓','✨','🎁','🍭'];
                 const selectedEmojis = ref([]);
                 const currentAdvice = ref('');
                 const stats = ref({ todaySmiles: 0, totalSmiles: 0, lastDate: '' });
                 
-                // Функции статистики, генерации советов - копируй из предыдущего кода
-                // ...
+                const kittyActions = ['носи любимый бантик','ешь клубничку','танцуй','улыбайся','гуляй с мороженым','слушай музыку','рисуй сердечки','мечтай'];
+                const kittyDetails = ['с белым бантиком','под звёздами','с подружками','в розовом','с котиками','на пикнике'];
+                const kittyBonuses = ['ты суперзвезда!','Hello Kitty гордится тобой!','мяу-мяу класс!','самая милая!'];
                 
-                return { kittyEmojis, selectedEmojis, currentAdvice, stats };
+                const loadStats = () => {
+                    const saved = localStorage.getItem('iraKittyStats');
+                    if (saved) {
+                        stats.value = JSON.parse(saved);
+                        const today = new Date().toDateString();
+                        if (stats.value.lastDate !== today) {
+                            stats.value.todaySmiles = 0;
+                            stats.value.lastDate = today;
+                        }
+                    } else {
+                        stats.value.lastDate = new Date().toDateString();
+                        localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
+                    }
+                };
+                
+                const toggleEmoji = (emoji) => {
+                    const idx = selectedEmojis.value.indexOf(emoji);
+                    if (idx > -1) selectedEmojis.value.splice(idx, 1);
+                    else if (selectedEmojis.value.length < 3) selectedEmojis.value.push(emoji);
+                };
+                
+                const generateAdvice = () => {
+                    const actionIdx = Math.floor(Math.random() * kittyActions.length);
+                    const detailIdx = Math.floor(Math.random() * kittyDetails.length);
+                    const bonusIdx = Math.floor(Math.random() * kittyBonuses.length);
+                    
+                    currentAdvice.value = `${kittyActions[actionIdx]} ${kittyDetails[detailIdx]}, ${kittyBonuses[bonusIdx]}`;
+                    
+                    stats.value.todaySmiles++; stats.value.totalSmiles++;
+                    localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
+                    
+                    for(let i = 0; i < 10; i++) {
+                        setTimeout(() => {
+                            const heart = document.createElement('div');
+                            heart.className = 'heart';
+                            heart.innerHTML = ['💖','✨','🌸','🐾'][Math.floor(Math.random()*4)];
+                            heart.style.left = Math.random() * 100 + '%';
+                            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                            document.querySelector('.hearts').appendChild(heart);
+                            setTimeout(() => heart.remove(), 4500);
+                        }, i * 100);
+                    }
+                };
+                
+                const shareAdvice = () => {
+                    if (window.Telegram?.WebApp) {
+                        Telegram.WebApp.showAlert('Мяу-мяу! Совет сохранён! 🐾💕');
+                    } else {
+                        navigator.clipboard.writeText(currentAdvice.value);
+                        alert('Kitty совет скопирован! 💖');
+                    }
+                };
+                
+                onMounted(() => {
+                    loadStats();
+                    if (window.Telegram?.WebApp) {
+                        Telegram.WebApp.expand();
+                        Telegram.WebApp.MainButton.setText('Новый совет от Kitty! 😻')
+                            .setColor('#ff1493').show().onClick(generateAdvice);
+                    }
+                });
+                
+                return { kittyEmojis, selectedEmojis, currentAdvice, stats, toggleEmoji, generateAdvice, shareAdvice };
             }
         }).mount('#app');
     </script>
