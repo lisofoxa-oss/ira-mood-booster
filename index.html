@@ -19,21 +19,20 @@
         }
         
         .music-toggle {
-            position: absolute; top: 20px; right: 20px; z-index: 1000;
-            width: 65px; height: 65px; border: none; border-radius: 50%;
-            background: linear-gradient(45deg, #ff1493, #ff69b4); color: white;
-            font-size: 1.6em; cursor: pointer; box-shadow: 0 10px 30px rgba(255,20,147,0.4);
-            animation: musicPulse 2s infinite; transition: all 0.3s;
+            position: absolute; top: 15px; right: 15px; z-index: 1000;
+            width: 55px; height: 55px; border: none; border-radius: 15px;
+            background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;
+            font-size: 1.4em; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 8px 25px rgba(255,105,180,0.4);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
         }
+        .music-toggle:hover { transform: scale(1.1) rotate(10deg); }
+        .music-toggle.active { background: linear-gradient(135deg, #4caf50, #66bb6a); }
         @keyframes musicPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.12); }
         }
-        .music-toggle.active { 
-            background: linear-gradient(45deg, #4caf50, #81c784); 
-            animation: none;
-        }
-        .music-toggle:hover { transform: scale(1.1); }
         
         .header { 
             display: flex; align-items: center; margin: 80px 0 30px 0;
@@ -182,7 +181,7 @@
 <body>
     <div id="app">
         <button class="music-toggle" @click="toggleMusic" :class="{ active: isMusicOn }">
-            {{ isMusicOn ? '🎵' : '🎶' }}
+            <span>{{ isMusicOn ? '🎵' : '🎶' }}</span>
         </button>
 
         <div class="header">
@@ -288,12 +287,19 @@
                 
                 const toggleMusic = () => {
                     isMusicOn.value = !isMusicOn.value;
-                    if (isMusicOn.value && bgMusic.value) {
+                    console.log('Music toggled:', isMusicOn.value); // DEBUG
+                    
+                    if (bgMusic.value) {
                         bgMusic.value.volume = 0.15;
-                        bgMusic.value.play().catch(() => {});
-                    } else if (bgMusic.value) {
-                        bgMusic.value.pause();
-                        bgMusic.value.currentTime = 0;
+                        if (isMusicOn.value) {
+                            bgMusic.value.play().then(() => {
+                                console.log('Background music started'); // DEBUG
+                            }).catch(e => {
+                                console.log('Music autoplay blocked:', e); // DEBUG
+                            });
+                        } else {
+                            bgMusic.value.pause();
+                        }
                     }
                 };
                 
@@ -369,7 +375,16 @@
                             });
                     }
                 });
-                
+const playSound = (soundRef) => {
+    if (isMusicOn.value && soundRef.value) {
+        console.log('Playing sound:', soundRef); // DEBUG
+        soundRef.value.currentTime = 0;
+        soundRef.value.volume = 0.4;
+        soundRef.value.play().catch(e => {
+            console.log('Sound blocked:', e); // DEBUG
+        });
+    }
+};                
                 return { 
                     kittyEmojis, selectedEmojis, currentAdvice, stats, copyStatus, isMusicOn,
                     toggleEmoji, generateAdvice, shareAdvice, compliments, toggleMusic,
