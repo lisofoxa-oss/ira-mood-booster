@@ -352,6 +352,9 @@
         <audio ref="sparkleSound" preload="auto">
             <source src="sparkle.mp3" type="audio/mpeg">
         </audio>
+        <audio ref="themeSwitchSound" preload="auto">
+            <source src="from-pink.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
     <script>
@@ -493,6 +496,7 @@
                 const clickSound = ref(null);
                 const bgMusic = ref(null);
                 const sparkleSound = ref(null);
+                const themeSwitchSound = ref(null);
                 
                 // ========== ФУНКЦИИ ==========
                 
@@ -661,6 +665,13 @@
                 };
 
                 const switchToGothic = () => {
+                    // Проигрываем звук перехода
+                    if (themeSwitchSound.value) {
+                        themeSwitchSound.value.currentTime = 0;
+                        themeSwitchSound.value.volume = 0.5;
+                        themeSwitchSound.value.play().catch(e => console.log('Sound blocked:', e));
+                    }
+                    
                     // Сохраняем выбранные эмодзи для передачи
                     if (selectedEmojis.value.length > 0) {
                         localStorage.setItem('kittyStyleTransition', JSON.stringify({
@@ -807,6 +818,7 @@
                     shareAdvice, 
                     toggleMusic,
                     switchToGothic,
+                    themeSwitchSound,
                     triggerEasterEgg,
                     meowSound, 
                     clickSound, 
