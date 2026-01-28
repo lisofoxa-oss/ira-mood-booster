@@ -197,9 +197,10 @@
         }
 
         .close-btn {
-            position: absolute; 
+            position: sticky; 
             top: 15px; 
             right: 15px;
+            margin-left: auto;
             background: linear-gradient(135deg, #ff69b4, #ff1493);
             color: white; 
             border: none; 
@@ -210,6 +211,7 @@
             cursor: pointer;
             box-shadow: 0 8px 25px rgba(255,105,180,0.4);
             transition: all 0.3s ease;
+            z-index: 10;
         }
         .close-btn:hover {
             transform: scale(1.1) rotate(90deg);
@@ -290,7 +292,9 @@
         <!-- Модальное окно совета -->
         <div class="advice-modal" :class="{ show: showAdviceModal }" @click="showAdviceModal = false">
             <div class="advice-content" @click.stop>
-                <button class="close-btn" @click="showAdviceModal = false">✕</button>
+                <div style="display: flex; justify-content: flex-end; position: sticky; top: 0; background: white; padding: 15px 0 0 0; z-index: 5;">
+                    <button class="close-btn" @click="showAdviceModal = false">✕</button>
+                </div>
                 <div style="text-align: center; margin-bottom: 25px;">
                     <img :src="kittyAdviceImage" alt="Kitty" style="width: 120px; height: 120px; margin-bottom: 15px;">
                     <div class="kitty-talk" style="font-size: 1.8em; margin: 0; background: linear-gradient(45deg, #ff1493, #ff69b4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;">😻 Kitty говорит:</div>
