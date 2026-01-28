@@ -29,7 +29,19 @@
         }
         .music-toggle:hover { transform: scale(1.1) rotate(10deg); }
         .music-toggle.active { background: linear-gradient(135deg, #4caf50, #66bb6a); }
-        
+
+        .style-toggle {
+            position: absolute; top: 15px; left: 15px; z-index: 1000;
+            width: 55px; height: 55px; border: none; border-radius: 15px;
+            background: linear-gradient(135deg, #6b0f1a, #4b0082); color: white;
+            font-size: 1.4em; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 8px 25px rgba(107, 15, 26, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid #8b0000;
+        }
+        .style-toggle:hover { transform: scale(1.1) rotate(10deg); }
+
         .header { 
             display: flex; align-items: center; margin: 80px 0 30px 0;
             background: rgba(255,255,255,0.95); padding: 25px; 
@@ -250,6 +262,10 @@
             <span>{{ isMusicOn ? '🎵' : '🎶' }}</span>
         </button>
 
+        <button class="style-toggle" @click="switchToGothic" title="Переключить на готический стиль">
+            <span>🦇</span>
+        </button>
+        
         <div class="header">
             <img :src="kittyMoodImage" :class="kittyMoodClass" alt="Kitty">
             <h1>Hello Ириша! 🎀</h1>
@@ -643,6 +659,34 @@
                         }, 2000);
                     }
                 };
+
+                const switchToGothic = () => {
+                    // Сохраняем выбранные эмодзи для передачи
+                    if (selectedEmojis.value.length > 0) {
+                        localStorage.setItem('kittyStyleTransition', JSON.stringify({
+                            emojis: selectedEmojis.value,
+                            timestamp: Date.now()
+                        }));
+                    }
+                    
+                    // Плавный переход
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = `
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: linear-gradient(135deg, #6b0f1a, #4b0082);
+                        z-index: 9999; opacity: 0; pointer-events: none;
+                        transition: opacity 0.8s ease;
+                    `;
+                    document.body.appendChild(overlay);
+                    
+                    // Запускаем анимацию
+                    setTimeout(() => {
+                        overlay.style.opacity = '1';
+                        setTimeout(() => {
+                            window.location.href = 'gothic.html';
+                        }, 800);
+                    }, 50);
+                };
                 
                 // Анимация сердец
                 const createHeartsAnimation = () => {
@@ -705,7 +749,18 @@
                 // Инициализация
                 onMounted(() => {
                     loadStats();
-                    
+                    // Восстанавливаем выбранные эмодзи после перехода
+                    const transitionData = localStorage.getItem('kittyStyleTransition');
+                    if (transitionData) {
+                        const data = JSON.parse(transitionData);
+                        // Проверяем, что данные не старше 5 секунд
+                        if (Date.now() - data.timestamp < 5000) {
+                            selectedEmojis.value = data.emojis;
+                            updateKittyMood();
+                        }
+                        // Удаляем данные после использования
+                        localStorage.removeItem('kittyStyleTransition');
+                    }
                     // Инициализация звуков
                     [meowSound, clickSound, bgMusic, sparkleSound].forEach(sound => {
                         if (sound.value) sound.value.load();
@@ -751,6 +806,7 @@
                     generateAdvice, 
                     shareAdvice, 
                     toggleMusic,
+                    switchToGothic,
                     triggerEasterEgg,
                     meowSound, 
                     clickSound, 
