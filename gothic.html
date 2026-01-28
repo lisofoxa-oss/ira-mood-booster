@@ -102,7 +102,7 @@
         
         .emoji-btn {
             width: 100%; height: 85px; border: none; border-radius: 25px;
-            font-size: 2.5em; background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 70, 0.9));
+            font-size: 2.2em; background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 70, 0.9));
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); cursor: pointer;
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             position: relative; overflow: hidden; border: 4px solid transparent;
@@ -217,27 +217,28 @@
             border: 3px solid #6b0f1a;
         }
 
-        .close-btn {
-            position: sticky; 
-            top: 15px; 
-            right: 15px;
-            margin-left: auto;
-            background: linear-gradient(135deg, #6b0f1a, #4b0082);
-            color: #fff9f9; 
-            border: none; 
-            border-radius: 50%;
-            width: 45px; 
-            height: 45px; 
-            font-size: 1.8em; 
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(107, 15, 26, 0.6);
-            transition: all 0.3s ease;
-            z-index: 10;
-            border: 2px solid #8b0000;
-        }
-        .close-btn:hover {
-            transform: scale(1.1) rotate(90deg);
-        }
+		.close-btn {
+		    position: sticky; 
+		    top: 15px; 
+		    right: 15px;
+		    margin-left: auto;
+		    background: linear-gradient(135deg, #ff69b4, #ff1493);
+		    color: white; 
+		    border: none; 
+		    border-radius: 50%;
+		    width: 45px; 
+		    height: 45px; 
+		    font-size: 1.8em; 
+		    cursor: pointer;
+		    box-shadow: 0 8px 25px rgba(255,105,180,0.4);
+		    transition: all 0.3s ease;
+		    z-index: 10;
+		    border: 2px solid white;
+		}
+		.close-btn:hover {
+		    transform: scale(1.1) rotate(90deg);
+		    box-shadow: 0 10px 30px rgba(255,105,180,0.6);
+		}
         
         .history-item {
             padding: 20px; margin-bottom: 15px; border-radius: 20px;
@@ -319,9 +320,7 @@
         <!-- Модальное окно совета -->
         <div class="advice-modal" :class="{ show: showAdviceModal }" @click="showAdviceModal = false">
             <div class="advice-content" @click.stop>
-                <div style="display: flex; justify-content: flex-end; position: sticky; top: 0; background: #1a1a2e; padding: 15px 0 0 0; z-index: 5; margin: -15px -35px 0 0;">
-                    <button class="close-btn" @click="showAdviceModal = false">✕</button>
-                </div>
+                <button class="close-btn" @click="showAdviceModal = false">✕</button>
                 <div style="text-align: center; margin-bottom: 25px;">
                     <img :src="kittyAdviceImage" alt="Midnight Kitty" style="width: 120px; height: 120px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(107, 15, 26, 0.5));">
                     <div class="kitty-talk" style="font-size: 1.8em; margin: 0; background: linear-gradient(45deg, #8b0000, #4b0082); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0 0 15px rgba(139, 0, 0, 0.5);">🦇 Midnight Kitty говорит:</div>
@@ -826,4 +825,5 @@
 </body>
 
 </html>
+
 
