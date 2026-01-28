@@ -350,6 +350,17 @@
                         }, i * 100);
                     }
                 };
+const playSound = (soundRef) => {
+    if (isMusicOn.value && soundRef.value) {
+        console.log('Playing sound:', soundRef); // DEBUG
+        soundRef.value.currentTime = 0;
+        soundRef.value.volume = 0.4;
+        soundRef.value.play().catch(e => {
+            console.log('Sound blocked:', e); // DEBUG
+        });
+    }
+};        
+
                 
                 const shareAdvice = async () => {
                     playSound(clickSound);
@@ -375,16 +386,7 @@
                             });
                     }
                 });
-const playSound = (soundRef) => {
-    if (isMusicOn.value && soundRef.value) {
-        console.log('Playing sound:', soundRef); // DEBUG
-        soundRef.value.currentTime = 0;
-        soundRef.value.volume = 0.4;
-        soundRef.value.play().catch(e => {
-            console.log('Sound blocked:', e); // DEBUG
-        });
-    }
-};                
+        
                 return { 
                     kittyEmojis, selectedEmojis, currentAdvice, stats, copyStatus, isMusicOn,
                     toggleEmoji, generateAdvice, shareAdvice, compliments, toggleMusic,
