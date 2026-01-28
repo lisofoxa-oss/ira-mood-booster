@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midnight Kitty 🦇</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0a0a url('gothic-bg.jpg') repeat;
+            min-height: 100vh; overflow-x: hidden;
+            color: #e0e0e0;
+        }
+        #app { 
+            padding: 25px 20px; max-width: 400px; margin: 0 auto; 
+            position: relative; min-height: 100vh;
+        }
+        
+        .music-toggle {
+            position: absolute; top: 15px; right: 15px; z-index: 1000;
+            width: 55px; height: 55px; border: none; border-radius: 15px;
+            background: linear-gradient(135deg, #6b0f1a, #8b0000); color: #e0e0e0;
+            font-size: 1.4em; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 8px 25px rgba(107, 15, 26, 0.6);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid #8b0000;
+        }
+        .music-toggle:hover { transform: scale(1.1) rotate(10deg); }
+        .music-toggle.active { background: linear-gradient(135deg, #4caf50, #66bb6a); }
+        
+		.style-toggle {
+			position: absolute; top: 15px; left: 15px; z-index: 1000;
+			width: 55px; height: 55px; border: none; border-radius: 15px;
+			background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;
+			font-size: 1.4em; font-weight: bold; cursor: pointer; 
+			box-shadow: 0 8px 25px rgba(255,105,180,0.4);
+			display: flex; align-items: center; justify-content: center;
+			transition: all 0.3s ease;
+		}
+		.style-toggle:hover { transform: scale(1.1) rotate(10deg); }
+		
+        .header { 
+            display: flex; align-items: center; margin: 80px 0 30px 0;
+            background: rgba(15, 15, 25, 0.95); padding: 25px; 
+            border-radius: 35px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border: 3px solid #6b0f1a;
+        }
+        
+        .header img { 
+            width: 100px; height: 100px; margin-right: 25px; 
+            animation: kittyFloat 3s ease-in-out infinite; 
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 0 10px rgba(107, 15, 26, 0.5));
+        }
+        .header img.happy { animation: kittyHappy 2s ease-in-out infinite; }
+        .header img.surprised { animation: kittySurprised 3s ease-in-out infinite; }
+        .header img.sleepy { animation: kittySleepy 4s ease-in-out infinite; }
+        
+        @keyframes kittyFloat { 
+            0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} 
+        }
+        @keyframes kittyHappy {
+            0%,100%{transform:translateY(0) rotate(0deg);}
+            25%{transform:translateY(-15px) rotate(5deg);}
+            75%{transform:translateY(-15px) rotate(-5deg);}
+        }
+        @keyframes kittySurprised {
+            0%,100%{transform:translateY(0) scale(1);}
+            50%{transform:translateY(-20px) scale(1.1);}
+        }
+        @keyframes kittySleepy {
+            0%,100%{transform:translateY(0);}
+            50%{transform:translateY(5px);}
+        }
+        
+        h1 { 
+            background: linear-gradient(45deg, #8b0000, #4b0082); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 1.6em; font-weight: 800; margin: 0; flex: 1;
+            text-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+        }
+        
+        .mood-indicator {
+            text-align: center; margin: 15px 0;
+            font-size: 1.1em; font-weight: 600;
+            color: #8b0000;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+        
+        .emoji-grid {
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; 
+            margin: 35px 0; padding: 30px 25px; 
+            background: rgba(20, 20, 35, 0.92); border-radius: 35px; 
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(25px); border: 3px solid #6b0f1a;
+        }
+        
+        .emoji-btn {
+            width: 100%; height: 85px; border: none; border-radius: 25px;
+            font-size: 2.5em; background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 70, 0.9));
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative; overflow: hidden; border: 4px solid transparent;
+            color: #e0e0e0;
+        }
+        .emoji-btn::before {
+            content: ''; position: absolute; top: -50%; left: -50%; 
+            width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .emoji-btn:hover::before { opacity: 1; }
+        .emoji-btn:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            border-color: #8b0000; box-shadow: 0 20px 50px rgba(139, 0, 0, 0.5);
+        }
+        .emoji-btn.selected { 
+            background: linear-gradient(135deg, #6b0f1a, #4b0082) !important;
+            color: #fff9f9; transform: translateY(-12px) scale(1.15) !important;
+            border-color: #a9a9a9 !important; 
+            box-shadow: 0 25px 70px rgba(107, 15, 26, 0.7) !important;
+            animation: selectedPulse 1s infinite;
+        }
+        
+        @keyframes selectedPulse {
+            0%, 100% { box-shadow: 0 25px 70px rgba(107, 15, 26, 0.7); }
+            50% { box-shadow: 0 30px 80px rgba(139, 0, 0, 0.8); }
+        }
+        .emoji-btn:disabled:not(.selected) { opacity: 0.6; cursor: not-allowed; }
+        
+        .generate-btn, .share-btn, .history-btn {
+            width: 100%; padding: 25px; border: none; border-radius: 40px;
+            background: linear-gradient(45deg, #6b0f1a, #4b0082, #2c003e); 
+            background-size: 200% 200%; color: #fff9f9; font-size: 1.45em; 
+            font-weight: 800; cursor: pointer; margin: 15px 0; 
+            box-shadow: 0 15px 45px rgba(107, 15, 26, 0.6);
+            animation: gradientShift 3s ease infinite; position: relative; overflow: hidden;
+            border: 3px solid #8b0000;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .generate-btn:hover:not(:disabled), .share-btn:hover, .history-btn:hover { 
+            transform: translateY(-5px) scale(1.03); 
+            box-shadow: 0 25px 60px rgba(139, 0, 0, 0.7);
+        }
+        .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .copy-status {
+            background: linear-gradient(135deg, rgba(76,175,80,0.9), rgba(129,199,132,0.8));
+            color: white; padding: 12px 20px; border-radius: 25px;
+            font-weight: 600; font-size: 1em; margin-top: 15px;
+            opacity: 0; transform: translateY(20px); transition: all 0.4s;
+        }
+        .copy-status.show { opacity: 1; transform: translateY(0); }
+        
+        .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1001; width: 100%; height: 100%; }
+        .heart { 
+            position: absolute; font-size: 2em; color: #8b0000;
+            animation: floatUp 4.5s ease-out forwards;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { transform: translateY(-120px) scale(1) rotate(360deg); opacity: 0; }
+        }
+        
+        .history-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; align-items: center;
+            justify-content: center; z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .history-modal.show { opacity: 1; pointer-events: all; }
+        
+        .history-content {
+            background: #1a1a2e; border-radius: 30px; width: 90%; max-width: 450px;
+            max-height: 80vh; overflow-y: auto; padding: 30px;
+            box-shadow: 0 30px 100px rgba(0,0,0,0.7);
+            position: relative;
+            border: 3px solid #6b0f1a;
+        }
+        
+        .advice-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); 
+            display: flex; align-items: center; justify-content: center; 
+            z-index: 1000; 
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .advice-modal.show { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+
+        .advice-content {
+            background: #1a1a2e; 
+            border-radius: 35px; 
+            width: 90%; 
+            max-width: 480px;
+            padding: 45px 35px;
+            box-shadow: 0 30px 100px rgba(107, 15, 26, 0.7);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 3px solid #6b0f1a;
+        }
+
+        .close-btn {
+            position: sticky; 
+            top: 15px; 
+            right: 15px;
+            margin-left: auto;
+            background: linear-gradient(135deg, #6b0f1a, #4b0082);
+            color: #fff9f9; 
+            border: none; 
+            border-radius: 50%;
+            width: 45px; 
+            height: 45px; 
+            font-size: 1.8em; 
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(107, 15, 26, 0.6);
+            transition: all 0.3s ease;
+            z-index: 10;
+            border: 2px solid #8b0000;
+        }
+        .close-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+        
+        .history-item {
+            padding: 20px; margin-bottom: 15px; border-radius: 20px;
+            background: linear-gradient(135deg, #2c003e, #1a1a2e);
+            border-left: 5px solid #6b0f1a;
+            color: #e0e0e0;
+        }
+        .history-item h4 { margin-bottom: 10px; color: #8b0000; font-weight: 700; }
+        .history-item p { color: #c0c0c0; line-height: 1.6; }
+        .history-item small { color: #a0a0a0; font-size: 0.85em; display: block; margin-top: 8px; }
+        
+        .easter-egg {
+            position: fixed; bottom: 20px; right: 20px; z-index: 999;
+            background: linear-gradient(135deg, #6b0f1a, #4b0082);
+            color: #fff9f9; padding: 15px 25px; border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(107, 15, 26, 0.7);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            font-weight: 700;
+            display: none;
+            border: 2px solid #8b0000;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        audio { display: none; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button class="music-toggle" @click="toggleMusic" :class="{ active: isMusicOn }" title="Фоновая музыка">
+            <span>{{ isMusicOn ? '🎵' : '🎶' }}</span>
+        </button>
+		<button class="style-toggle" @click="switchToPink" title="Переключить на розовый стиль">
+			<span>🎀</span>
+		</button>
+
+        <div class="header">
+            <img :src="kittyMoodImage" :class="kittyMoodClass" alt="Midnight Kitty">
+            <h1>Hello Ириша! 🦇</h1>
+        </div>
+        
+        <div class="mood-indicator" v-if="moodDescription">
+            {{ moodDescription }}
+        </div>
+        
+        <div style="text-align: center; margin: 15px 0; font-size: 1.1em; color: #8b0000; font-weight: 600; text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);">
+            Выбери 3 стикера и нажми кнопку ниже 🎃
+        </div>
+
+        <div class="emoji-grid">
+            <button v-for="(emoji, i) in kittyEmojis" :key="i"
+                class="emoji-btn" :class="{ selected: selectedEmojis.includes(emoji) }"
+                @click="toggleEmoji(emoji)" :disabled="selectedEmojis.length >= 3 && !selectedEmojis.includes(emoji)">
+                {{ emoji }}
+            </button>
+        </div>
+
+        <button class="generate-btn" :disabled="selectedEmojis.length < 3" @click="generateAdvice">
+            {{ selectedEmojis.length < 3 ? `Выбери ещё ${3 - selectedEmojis.length} стикера! 🖤` : '🦇 Midnight! Дай совет от Kitty! ✨' }}
+        </button>
+
+        <button v-if="currentAdvice" class="share-btn" @click="shareAdvice">
+            📋 Скопировать совет
+        </button>
+        
+        <button v-if="adviceHistory.length > 0" class="history-btn" @click="showHistory = true">
+            📖 История советов ({{ adviceHistory.length }})
+        </button>
+        
+        <div v-if="copyStatus.show" class="copy-status" :class="{ show: copyStatus.show }">
+            ✅ Совет скопирован! Вставь в чат 💀
+        </div>
+        
+        <div class="hearts" ref="heartsContainer"></div>
+        
+        <!-- Модальное окно совета -->
+        <div class="advice-modal" :class="{ show: showAdviceModal }" @click="showAdviceModal = false">
+            <div class="advice-content" @click.stop>
+                <div style="display: flex; justify-content: flex-end; position: sticky; top: 0; background: #1a1a2e; padding: 15px 0 0 0; z-index: 5; margin: -15px -35px 0 0;">
+                    <button class="close-btn" @click="showAdviceModal = false">✕</button>
+                </div>
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img :src="kittyAdviceImage" alt="Midnight Kitty" style="width: 120px; height: 120px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(107, 15, 26, 0.5));">
+                    <div class="kitty-talk" style="font-size: 1.8em; margin: 0; background: linear-gradient(45deg, #8b0000, #4b0082); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0 0 15px rgba(139, 0, 0, 0.5);">🦇 Midnight Kitty говорит:</div>
+                </div>
+                <div class="advice-text" style="font-size: 1.5em; color: #e0e0e0; line-height: 1.6; margin: 0 0 30px 0; font-weight: 600;">{{ currentAdvice }}</div>
+                <div class="kitty-compliment" style="font-size: 1.3em; color: #c71585; font-weight: 700; margin: 0; animation: sparkleText 2s ease-in-out infinite;">{{ currentCompliment }}</div>
+            </div>
+        </div>
+        
+        <!-- Модальное окно истории -->
+        <div class="history-modal" :class="{ show: showHistory }" @click="showHistory = false">
+            <div class="history-content" @click.stop>
+                <button class="close-btn" @click="showHistory = false">✕</button>
+                <h2 style="text-align: center; color: #8b0000; margin-bottom: 20px; text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);">📖 История советов</h2>
+                <div v-for="(item, index) in adviceHistory" :key="index" class="history-item">
+                    <h4>{{ item.date }}</h4>
+                    <p>{{ item.advice }}</p>
+                    <small>{{ item.compliment }}</small>
+                </div>
+                <p v-if="adviceHistory.length === 0" style="text-align: center; color: #a0a0a0;">История пуста</p>
+            </div>
+        </div>
+        
+        <!-- Пасхалка -->
+        <div class="easter-egg" ref="easterEgg" @click="triggerEasterEgg">
+            🎃 Сюрприз для Иры!
+        </div>
+        
+        <!-- Аудио -->
+        <audio ref="meowSound" preload="auto">
+            <source src="gothic-meow.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="clickSound" preload="auto">
+            <source src="gothic-click.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="bgMusic" loop preload="auto">
+            <source src="gothic-music.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="sparkleSound" preload="auto">
+            <source src="gothic-sparkle.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted, computed } = Vue;
+        
+        createApp({
+            setup() {
+                // ========== ГОТИЧЕСКИЕ ЭМОДЗИ ==========
+                const emojiMeanings = {
+                    '🦇': { type: 'mystery', energy: 'dark', keywords: ['тайна', 'ночь', 'загадка'] },
+                    '💀': { type: 'humor', energy: 'playful', keywords: ['юмор', 'смешно', 'игра'] },
+                    '🖤': { type: 'love', energy: 'deep', keywords: ['любовь', 'глубоко', 'верность'] },
+                    '🎃': { type: 'fun', energy: 'festive', keywords: ['веселье', 'праздник', 'тыква'] },
+                    '👻': { type: 'spirit', energy: 'playful', keywords: ['дух', 'привидение', 'легкость'] },
+                    '🕯️': { type: 'calm', energy: 'peaceful', keywords: ['спокойствие', 'свеча', 'умиротворение'] },
+                    '🌹': { type: 'beauty', energy: 'elegant', keywords: ['красота', 'романтика', 'элегантность'] },
+                    '✨': { type: 'magic', energy: 'mystical', keywords: ['магия', 'волшебство', 'сияние'] },
+                    '🕸️': { type: 'mystery', energy: 'intriguing', keywords: ['паутина', 'тайна', 'загадка'] },
+                    '🔮': { type: 'fortune', energy: 'mystical', keywords: ['судьба', 'предсказание', 'магия'] },
+                    '⚰️': { type: 'rest', energy: 'peaceful', keywords: ['отдых', 'покой', 'спокойствие'] },
+                    '🌕': { type: 'night', energy: 'mysterious', keywords: ['луна', 'ночь', 'загадка'] },
+                    '⚡': { type: 'energy', energy: 'powerful', keywords: ['энергия', 'сила', 'мощь'] },
+                    '☕': { type: 'comfort', energy: 'cozy', keywords: ['уют', 'кофе', 'тепло'] },
+                    '📚': { type: 'wisdom', energy: 'knowledge', keywords: ['мудрость', 'книги', 'знания'] },
+                    '☠️': { type: 'memento', energy: 'wise', keywords: ['мудрость', 'память', 'вечность'] }
+                };
+                
+                const kittyEmojis = ['🦇', '💀', '🖤', '🎃', '👻', '🕯️', '🌹', '✨', '🕸️', '🔮', '⚰️', '🌕', '⚡', '☕', '📚', '☠️'];
+                const selectedEmojis = ref([]);
+                
+                // ========== ГОТИЧЕСКИЕ СОВЕТЫ ==========
+                const adviceDatabase = {
+                    '🦇💀🖤': [
+                        'Ириша, даже в самой тёмной ночи есть место для света. Сегодня позволь себе быть загадочной и прекрасной, как полночь. Помни: твоя внутренняя сила сильнее любой тьмы 💀',
+                        'Знаешь, что общего у тебя и летучей мыши? Вы обе прекрасны в своём уникальном стиле! Сегодня отличный день, чтобы принять свою тёмную сторону и обнять её с любовью 🦇',
+                        'Иногда нужно погрузиться в тишину и тьму, чтобы услышать свой внутренний голос. Сегодня позволь себе побыть в одиночестве — это не страшно, это магия самопознания ✨'
+                    ],
+                    '🎃👻🕯️': [
+                        'Ириша, жизнь слишком коротка, чтобы быть серьёзной! Сегодня позволь себе пошалить, как привидение в старом замке — невидимо, но ощутимо. Смех — это лучшее лекарство даже для самых мрачных дней 🎃',
+                        'Знаешь, что самое страшное в этом мире? Серость и обыденность! Сегодня создай себе немного магии — зажги свечи, включи таинственную музыку и позволь дому наполниться тайной 🕯️',
+                        'Иногда лучший способ справиться с тьмой — это посмеяться над ней. Сегодня отличный день для того, чтобы быть немного безумной и весёлой. Ведь даже привидения любят хороший юмор! 👻'
+                    ],
+                    '🌹🖤✨': [
+                        'Ириша, чёрная роза — самая загадочная и прекрасная. Ты сегодня как она — таинственная, глубокая и невероятно красивая. Позволь себе сиять в своей уникальности 💎',
+                        'Знаешь, что делает любовь настоящей? Её глубина, как тёмный бархат ночи. Сегодня позволь себе почувствовать самые глубокие эмоции — они делают тебя сильнее и мудрее 🌹',
+                        'Иногда самые прекрасные вещи рождаются из тьмы. Сегодня твоя душа особенно магична — позволь себе творить чудеса и верить в невозможное ✨'
+                    ],
+                    '🔮🕸️🦇': [
+                        'Ириша, сегодня звёзды особенно таинственно мерцают для тебя. Доверься интуиции — она ведёт тебя верным путём, даже если ты его не видишь. Ты — хозяйка своей судьбы 🔮',
+                        'Знаешь, что общего у паутины и судьбы? Обе плетутся незаметно, но в итоге создают прекрасный узор. Сегодня позволь жизни плести свою паутину — ты в надёжных руках 🕸️',
+                        'Иногда ответы скрываются в тени. Сегодня отличный день для размышлений и медитации. Сядь в тишине, закрой глаза и позволь интуиции говорить с тобой 🦇'
+                    ],
+                    '🌕🕯️🖤': [
+                        'Ириша, полная луна сегодня особенно яркая для тебя. Это время магии и трансформации. Позволь себе измениться, стать лучше, глубже, мудрее. Ты заслуживаешь этого 🌕',
+                        'Знаешь, что самое прекрасное в свечах? Они горят ярче всего в темноте. Сегодня ты как свеча — свети ярко, даже если вокруг тьма. Твой свет нужен этому миру 🕯️',
+                        'Иногда нужно погрузиться в тишину лунной ночи, чтобы услышать своё сердце. Сегодня позволь себе быть загадочной и глубокой. Ты прекрасна в своей тёмной красоте 🖤'
+                    ],
+                    '⚡☕📚': [
+                        'Ириша, сегодня твоя энергия бьёт ключом, как молния в грозу! Используй эту силу мудро — читай, учись, развивайся. Знания — это настоящая магия ⚡',
+                        'Знаешь, что общего у кофе и мудрости? Оба согревают душу и дают силы. Сегодня отличный день для того, чтобы укутаться в плед, открыть книгу и погрузиться в мир знаний ☕',
+                        'Иногда лучший способ справиться с хаосом — это найти в нём порядок. Сегодня твоя интуиция особенно остра. Доверься ей, и она приведёт тебя к истине 📚'
+                    ],
+                    '⚰️🕯️👻': [
+                        'Ириша, иногда нужно умереть для старого, чтобы родиться для нового. Сегодня отличный день для того, чтобы отпустить прошлое и начать новую главу. Покой — это не конец, это начало 🕯️',
+                        'Знаешь, что самое прекрасное в привидениях? Они свободны от земных оков. Сегодня позволь себе почувствовать эту свободу — отпусти то, что тебя тяготит, и стань легче 👻',
+                        'Иногда лучший отдых — это полное отключение от мира. Сегодня создай себе уютный уголок, зажги свечи и позволь себе просто быть. Ты заслуживаешь покоя и тишины ⛹️'
+                    ],
+                    '🦇🔮🌹': [
+                        'Ириша, ты сегодня как ведьма у костра — загадочная, мудрая и невероятно сильная. Доверься своей интуиции, она никогда тебя не подводит. Ты — хозяйка своей магии 🔮',
+                        'Знаешь, что общего у чёрной розы и настоящей любви? Обе прекрасны в своей глубине и таинственности. Сегодня позволь себе любить глубоко и страстно, как в старых легендах 🌹',
+                        'Иногда самые большие чудеса случаются в самой глубокой тьме. Сегодня твоя душа особенно магична. Позволь себе творить чудеса и верить в невозможное 🦇'
+                    ]
+                };
+                
+                // Фолбэк советы для других комбинаций
+                const defaultAdvice = [
+                    'Ириша, даже в самой тёмной ночи звёзды продолжают светить. Сегодня помни: ты сильнее, чем думаешь, и прекраснее, чем представляешь. Твоя тёмная сторона — это твоя сила 💎',
+                    'Знаешь, что самое магическое в этом мире? То, что даже в тени есть красота. Сегодня позволь себе увидеть прекрасное в необычном, найти свет в темноте и обнять свою уникальность 🌙',
+                    'Иногда нужно погрузиться в тишину, чтобы услышать своё сердце. Сегодня отличный день для размышлений и самопознания. Ты — загадка, которую стоит разгадать ✨',
+                    'Ириша, ты как полночь — таинственная, глубокая и невероятно прекрасная. Сегодня позволь себе сиять в своей уникальности. Мир стал интереснее, когда ты в нём появилась 🦇',
+                    'Знаешь, что делает тебя особенной? Твоя способность находить красоту в необычном. Сегодня позволь себе быть немного странной, немного мрачной, но всегда прекрасной 🖤',
+                    'Иногда лучший способ справиться с тьмой — это принять её. Сегодня позволь себе быть загадочной и глубокой. Ты прекрасна именно такой, какая ты есть 💀'
+                ];
+                
+                // ========== ГОТИЧЕСКИЕ КОМПЛИМЕНТЫ ==========
+                const iraCompliments = [
+                    'Ириша, ты сегодня особенно загадочна, как полночь! 🌙 Твоя глубина завораживает даже самых опытных магов 🔮',
+                    'Знаешь, Ириша, в тебе есть что-то магическое — ты притягиваешь к себе тайну и красоту просто своим присутствием 🦇',
+                    'Ириша, ты как чёрная роза — редкая, прекрасная и совершенно уникальная. Мир стал таинственнее, когда ты в нём появилась 🌹',
+                    'Ты обладаешь удивительным даром — видеть красоту в тёмном. Продолжай сиять в своей уникальности! ✨',
+                    'Ириша, в тебе столько внутренней силы, что даже вампиры завидуют твоей энергии! 💎',
+                    'Ты — это маленькое чудо тьмы, которое делает жизнь других людей интереснее одним своим существованием. Помни об этом всегда! 🖤',
+                    'Ириша, твоя загадочность и глубина — это то, что делает тебя по-настоящему прекрасной. Продолжай быть собой! 🌕',
+                    'Знаешь, что самое прекрасное в тебе? Ты умеешь находить свет даже в самой глубокой тьме. Ты — настоящий дар для этого мира 💀'
+                ];
+                
+                // ========== НАСТРОЕНИЯ КОТЁНКА (ГОТИЧЕСКИЕ) ==========
+                const kittyMoods = {
+                    happy: { image: 'gothic-kitty-happy.png', class: 'happy', description: 'Midnight Kitty в хорошем настроении! 🦇' },
+                    surprised: { image: 'gothic-kitty-surprised.png', class: 'surprised', description: 'Midnight Kitty удивлён! 👻' },
+                    sleepy: { image: 'gothic-kitty-sleepy.png', class: 'sleepy', description: 'Midnight Kitty хочет отдохнуть... 🕯️' },
+                    loving: { image: 'gothic-kitty-love.png', class: 'happy', description: 'Midnight Kitty чувствует любовь! 🖤' },
+                    magical: { image: 'gothic-kitty-magical.png', class: 'happy', description: 'Midnight Kitty ощущает магию! 🔮' }
+                };
+                
+                // ========== СОСТОЯНИЯ ==========
+                const currentAdvice = ref('');
+                const currentCompliment = ref('');
+                const currentMood = ref('happy');
+                const moodDescription = computed(() => kittyMoods[currentMood.value]?.description || '');
+                const kittyMoodImage = computed(() => kittyMoods[currentMood.value]?.image || 'gothic-kitty-happy.png');
+                const kittyMoodClass = computed(() => kittyMoods[currentMood.value]?.class || '');
+                const kittyAdviceImage = computed(() => {
+                    const images = ['gothic-kitty-wink.png', 'gothic-kitty-happy.png'];
+                    return images[Math.floor(Math.random() * images.length)];
+                });
+                
+                const stats = ref({ todaySmiles: 0, totalSmiles: 0, lastDate: '' });
+                const copyStatus = ref({ show: false });
+                const isMusicOn = ref(false);
+                const showHistory = ref(false);
+                const showAdviceModal = ref(false);
+                const adviceHistory = ref([]);
+                const heartsContainer = ref(null);
+                const easterEgg = ref(null);
+                
+                // Аудио
+                const meowSound = ref(null);
+                const clickSound = ref(null);
+                const bgMusic = ref(null);
+                const sparkleSound = ref(null);
+                
+                // ========== ФУНКЦИИ ==========
+                
+                // Проигрывание звука
+                const playSound = (soundRef) => {
+                    if (!soundRef.value) return;
+                    soundRef.value.currentTime = 0;
+                    soundRef.value.volume = 0.4;
+                    soundRef.value.play().catch(e => console.log('Sound blocked:', e.message));
+                };
+                
+                // Переключение музыки
+                const toggleMusic = () => {
+                    isMusicOn.value = !isMusicOn.value;
+                    if (bgMusic.value) {
+                        bgMusic.value.volume = 0.15;
+                        if (isMusicOn.value) {
+                            bgMusic.value.play().catch(e => console.log('Music blocked:', e));
+                        } else {
+                            bgMusic.value.pause();
+                        }
+                    }
+                };
+                
+                // Загрузка статистики
+                const loadStats = () => {
+                    try {
+                        const saved = localStorage.getItem('gothicIraKittyStats');
+                        const today = new Date().toDateString();
+                        
+                        if (saved) {
+                            stats.value = JSON.parse(saved);
+                            if (stats.value.lastDate !== today) {
+                                stats.value.todaySmiles = 0;
+                                stats.value.lastDate = today;
+                            }
+                        } else {
+                            stats.value = {
+                                todaySmiles: 0,
+                                totalSmiles: 0,
+                                lastDate: today
+                            };
+                        }
+                        localStorage.setItem('gothicIraKittyStats', JSON.stringify(stats.value));
+                        
+                        // Загружаем историю
+                        const savedHistory = localStorage.getItem('gothicIraKittyHistory');
+                        if (savedHistory) {
+                            adviceHistory.value = JSON.parse(savedHistory);
+                        }
+                    } catch (e) {
+                        console.error('Error loading ', e);
+                    }
+                };
+                
+                // Переключение эмодзи
+                const toggleEmoji = (emoji) => {
+                    playSound(clickSound);
+                    
+                    const idx = selectedEmojis.value.indexOf(emoji);
+                    if (idx > -1) {
+                        selectedEmojis.value.splice(idx, 1);
+                    } else if (selectedEmojis.value.length < 3) {
+                        selectedEmojis.value.push(emoji);
+                    }
+                    
+                    // Определяем настроение котёнка на основе выбора
+                    updateKittyMood();
+                };
+                
+                // Обновление настроения котёнка
+                const updateKittyMood = () => {
+                    if (selectedEmojis.value.length === 0) {
+                        currentMood.value = 'happy';
+                        return;
+                    }
+                    
+                    // Анализируем выбранные эмодзи
+                    const hasLove = selectedEmojis.value.includes('🖤') || selectedEmojis.value.includes('🌹');
+                    const hasMagic = selectedEmojis.value.includes('✨') || selectedEmojis.value.includes('🔮') || selectedEmojis.value.includes('🦇');
+                    const hasComfort = selectedEmojis.value.includes('🕯️') || selectedEmojis.value.includes('☕') || selectedEmojis.value.includes('⚰️');
+                    
+                    if (hasLove) currentMood.value = 'loving';
+                    else if (hasMagic) currentMood.value = 'magical';
+                    else if (hasComfort) currentMood.value = 'sleepy';
+                    else if (selectedEmojis.value.length === 3) currentMood.value = 'surprised';
+                    else currentMood.value = 'happy';
+                };
+                
+                // Генерация совета на основе выбранных эмодзи
+                const generateAdvice = () => {
+                    playSound(sparkleSound);
+                    setTimeout(() => playSound(meowSound), 500);
+                    
+                    // Сортируем эмодзи для создания ключа
+                    const sortedEmojis = [...selectedEmojis.value].sort().join('');
+                    
+                    // Ищем совет в базе данных
+                    let advicePool = defaultAdvice;
+                    
+                    if (adviceDatabase[sortedEmojis]) {
+                        advicePool = adviceDatabase[sortedEmojis];
+                    } else {
+                        // Пытаемся найти частичные совпадения
+                        for (const key in adviceDatabase) {
+                            let matches = 0;
+                            for (const emoji of selectedEmojis.value) {
+                                if (key.includes(emoji)) matches++;
+                            }
+                            if (matches >= 2) {
+                                advicePool = adviceDatabase[key];
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Выбираем случайный совет
+                    currentAdvice.value = advicePool[Math.floor(Math.random() * advicePool.length)];
+                    
+                    // Выбираем комплимент для Иры
+                    currentCompliment.value = iraCompliments[Math.floor(Math.random() * iraCompliments.length)];
+                    
+                    // Обновляем статистику
+                    stats.value.todaySmiles++;
+                    stats.value.totalSmiles++;
+                    
+                    // Сохраняем в историю
+                    adviceHistory.value.unshift({
+                        date: new Date().toLocaleDateString('ru-RU', { 
+                            day: 'numeric', 
+                            month: 'long',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        advice: currentAdvice.value,
+                        compliment: currentCompliment.value
+                    });
+                    
+                    // Ограничиваем историю 20 записями
+                    if (adviceHistory.value.length > 20) {
+                        adviceHistory.value = adviceHistory.value.slice(0, 20);
+                    }
+                    
+                    try {
+                        localStorage.setItem('gothicIraKittyStats', JSON.stringify(stats.value));
+                        localStorage.setItem('gothicIraKittyHistory', JSON.stringify(adviceHistory.value));
+                    } catch (e) {
+                        console.error('Error saving ', e);
+                    }
+                    
+                    // Показываем модальное окно
+                    showAdviceModal.value = true;
+                    
+                    // Анимация сердец (тёмных!)
+                    createHeartsAnimation();
+                    
+                    // Показываем пасхалку с шансом 20%
+                    if (Math.random() < 0.2 && easterEgg.value) {
+                        setTimeout(() => {
+                            easterEgg.value.style.display = 'block';
+                            setTimeout(() => {
+                                easterEgg.value.style.display = 'none';
+                            }, 5000);
+                        }, 2000);
+                    }
+                };
+                
+                // Анимация сердец (тёмная версия)
+                const createHeartsAnimation = () => {
+                    if (!heartsContainer.value) return;
+                    
+                    heartsContainer.value.innerHTML = '';
+                    
+                    const heartEmojis = ['🖤', '🦇', '💀', '🎃', '👻', '🕯️', '🌹', '🔮'];
+                    
+                    for (let i = 0; i < 15; i++) {
+                        setTimeout(() => {
+                            const heart = document.createElement('div');
+                            heart.className = 'heart';
+                            heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                            heart.style.left = `${Math.random() * 100}%`;
+                            heart.style.animationDuration = `${(Math.random() * 2 + 3).toFixed(1)}s`;
+                            heart.style.fontSize = `${Math.random() * 1 + 1.5}em`;
+                            heart.style.color = ['#8b0000', '#4b0082', '#2c003e', '#6b0f1a'][Math.floor(Math.random() * 4)];
+                            heartsContainer.value.appendChild(heart);
+                            
+                            setTimeout(() => {
+                                if (heart.parentNode) {
+                                    heart.parentNode.removeChild(heart);
+                                }
+                            }, 5000);
+                        }, i * 120);
+                    }
+                };
+				
+				// переход на пинк версию
+				const switchToPink = () => {
+					// Сохраняем выбранные эмодзи для передачи
+					if (selectedEmojis.value.length > 0) {
+						localStorage.setItem('kittyStyleTransition', JSON.stringify({
+							emojis: selectedEmojis.value,
+							timestamp: Date.now()
+						}));
+					}
+					
+					// Плавный переход
+					const overlay = document.createElement('div');
+					overlay.style.cssText = `
+						position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+						background: linear-gradient(135deg, #ff69b4, #ff1493);
+						z-index: 9999; opacity: 0; pointer-events: none;
+						transition: opacity 0.8s ease;
+					`;
+					document.body.appendChild(overlay);
+					
+					// Запускаем анимацию
+					setTimeout(() => {
+						overlay.style.opacity = '1';
+						setTimeout(() => {
+							window.location.href = 'index.html';
+						}, 800);
+					}, 50);
+				};
+                
+                // Копирование совета
+                const shareAdvice = async () => {
+                    playSound(clickSound);
+                    
+                    const shareText = `🦇 Midnight Kitty говорит Ирише:\n${currentAdvice.value}\n\n${currentCompliment.value}\n\n#MidnightAdvice #Ириша`;
+                    
+                    try {
+                        await navigator.clipboard.writeText(shareText);
+                        
+                        copyStatus.value.show = false;
+                        setTimeout(() => {
+                            copyStatus.value.show = true;
+                            setTimeout(() => {
+                                copyStatus.value.show = false;
+                            }, 3000);
+                        }, 50);
+                    } catch (e) {
+                        console.error('Copy failed:', e);
+                        alert('Не удалось скопировать текст. Попробуйте выделить и скопировать вручную.');
+                    }
+                };
+                
+                // Пасхалка
+                const triggerEasterEgg = () => {
+                    playSound(sparkleSound);
+                    alert('🎃 Специальный подарок для самой загадочной Ириши! 🦇\n\nТы — невероятно уникальный человек, который заслуживает всего самого тёмного и прекрасного на свете! Пусть каждый твой день будет наполнен магией, тайной и волшебством! 🖤✨');
+                    if (easterEgg.value) {
+                        easterEgg.value.style.display = 'none';
+                    }
+                };
+                
+                // Инициализация
+                onMounted(() => {
+                    loadStats();
+                    // Восстанавливаем выбранные эмодзи после перехода
+					const transitionData = localStorage.getItem('kittyStyleTransition');
+					if (transitionData) {
+						const data = JSON.parse(transitionData);
+						// Проверяем, что данные не старше 5 секунд
+						if (Date.now() - data.timestamp < 5000) {
+							selectedEmojis.value = data.emojis;
+							updateKittyMood();
+						}
+						// Удаляем данные после использования
+						localStorage.removeItem('kittyStyleTransition');
+					}
+					
+                    // Инициализация звуков
+                    [meowSound, clickSound, bgMusic, sparkleSound].forEach(sound => {
+                        if (sound.value) sound.value.load();
+                    });
+                    
+                    // Telegram WebApp
+                    if (window.Telegram?.WebApp) {
+                        Telegram.WebApp.expand();
+                        
+                        if (Telegram.WebApp.MainButton) {
+                            Telegram.WebApp.MainButton
+                                .setText('Новый совет от Midnight Kitty! 🦇')
+                                .setColor('#6b0f1a')
+                                .show()
+                                .onClick(() => {
+                                    playSound(clickSound);
+                                    selectedEmojis.value = [];
+                                    generateAdvice();
+                                });
+                        }
+                    }
+                });
+        
+                return { 
+                    kittyEmojis, 
+                    selectedEmojis, 
+                    currentAdvice,
+                    currentCompliment,
+                    currentMood,
+                    moodDescription,
+                    kittyMoodImage,
+                    kittyMoodClass,
+                    kittyAdviceImage,
+                    stats, 
+                    copyStatus, 
+                    isMusicOn,
+                    showHistory,
+                    showAdviceModal,
+                    adviceHistory,
+                    heartsContainer,
+                    easterEgg,
+                    toggleEmoji, 
+                    generateAdvice, 
+                    shareAdvice, 
+                    toggleMusic,
+					switchToPink,
+                    triggerEasterEgg,
+                    meowSound, 
+                    clickSound, 
+                    bgMusic, 
+                    sparkleSound
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
