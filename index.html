@@ -17,84 +17,151 @@
         
         .header { 
             display: flex; align-items: center; margin-bottom: 30px;
-            background: rgba(255,255,255,0.9); padding: 20px; 
-            border-radius: 30px; box-shadow: 0 15px 40px rgba(255,182,193,0.3);
+            background: rgba(255,255,255,0.95); padding: 25px; 
+            border-radius: 35px; box-shadow: 0 20px 50px rgba(255,182,193,0.3);
+            backdrop-filter: blur(20px);
         }
-        .header img { width: 90px; height: 90px; margin-right: 20px; animation: kittyFloat 3s infinite; }
-        @keyframes kittyFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+        .header img { 
+            width: 100px; height: 100px; margin-right: 25px; 
+            animation: kittyFloat 3s ease-in-out infinite; 
+        }
+        @keyframes kittyFloat { 
+            0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} 
+        }
         
         h1 { 
             background: linear-gradient(45deg, #ff1493, #ff69b4); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-size: 2em; font-weight: 800; margin: 0;
+            font-size: 2.1em; font-weight: 800; margin: 0; flex: 1;
         }
         
         .emoji-grid {
-            display: grid; grid-template-columns: repeat(4,1fr); gap: 15px;
-            margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.9);
-            border-radius: 30px; box-shadow: 0 15px 45px rgba(255,105,180,0.2);
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 18px; 
+            margin: 35px 0; 
+            padding: 30px 25px; 
+            background: rgba(255,255,255,0.92); 
+            border-radius: 35px; 
+            box-shadow: 0 20px 60px rgba(255,105,180,0.25);
+            backdrop-filter: blur(25px);
+            border: 3px solid rgba(255,182,193,0.4);
         }
         .emoji-btn {
-            width: 75px; height: 75px; border: none; border-radius: 25px;
-            font-size: 2.2em; background: rgba(255,255,255,0.9);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1); cursor: pointer;
-            transition: all 0.3s; border: 3px solid transparent;
+            width: 100%; height: 85px; border: none; border-radius: 25px;
+            font-size: 2.5em; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,245,248,0.9));
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative; overflow: hidden;
+            border: 4px solid transparent;
         }
-        .emoji-btn:hover { transform: scale(1.15); border-color: #ff69b4; }
+        .emoji-btn::before {
+            content: ''; position: absolute; top: -50%; left: -50%; 
+            width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .emoji-btn:hover::before { opacity: 1; }
+        .emoji-btn:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            border-color: #ff69b4; box-shadow: 0 20px 50px rgba(255,105,180,0.4);
+        }
         .emoji-btn.selected { 
-            background: linear-gradient(45deg, #ff1493, #ff69b4) !important;
-            color: white; transform: scale(1.25) !important; animation: pulse 0.6s infinite;
+            background: linear-gradient(135deg, #ff69b4, #ff1493) !important;
+            color: white; transform: translateY(-12px) scale(1.15) !important;
+            border-color: #ffe4f0 !important; 
+            box-shadow: 0 25px 70px rgba(255,105,180,0.6) !important;
+            animation: selectedPulse 1s infinite;
         }
+        @keyframes selectedPulse {
+            0%, 100% { box-shadow: 0 25px 70px rgba(255,105,180,0.6); }
+            50% { box-shadow: 0 30px 80px rgba(255,105,180,0.8); }
+        }
+        .emoji-btn:disabled:not(.selected) { opacity: 0.6; cursor: not-allowed; }
         
         .generate-btn {
-            width: 100%; padding: 20px; border: none; border-radius: 35px;
-            background: linear-gradient(45deg, #ff1493, #ff69b4); color: white;
-            font-size: 1.4em; font-weight: 700; cursor: pointer; margin: 25px 0;
-            box-shadow: 0 12px 35px rgba(255,20,147,0.4);
+            width: 100%; padding: 25px; border: none; border-radius: 40px;
+            background: linear-gradient(45deg, #ff1493, #ff69b4, #ffc0cb); 
+            background-size: 200% 200%; color: white; font-size: 1.45em; 
+            font-weight: 800; cursor: pointer; margin: 30px 0; 
+            box-shadow: 0 15px 45px rgba(255,20,147,0.4);
+            animation: gradientShift 3s ease infinite;
+            position: relative; overflow: hidden;
         }
-        .generate-btn:hover:not(:disabled) { transform: translateY(-3px); }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .generate-btn:hover:not(:disabled) { 
+            transform: translateY(-5px) scale(1.03); 
+            box-shadow: 0 25px 60px rgba(255,20,147,0.6);
+        }
         .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .advice {
-            background: rgba(255,255,255,0.95); padding: 35px 25px;
-            border-radius: 35px; text-align: center; margin: 30px 0;
-            box-shadow: 0 20px 60px rgba(255,105,180,0.3);
+            background: rgba(255,255,255,0.97); padding: 45px 30px 35px;
+            border-radius: 40px; text-align: center; margin: 35px 0;
+            box-shadow: 0 25px 80px rgba(255,105,180,0.35);
             position: relative; overflow: hidden;
+            border: 4px solid rgba(255,182,193,0.5);
+            backdrop-filter: blur(25px);
         }
         .advice img { 
-            position: absolute; left: 25px; top: 50%; 
-            transform: translateY(-50%); width: 85px; height: 85px;
-            animation: kittyWink 2s infinite;
+            position: absolute; left: 30px; top: 50%; 
+            transform: translateY(-50%); width: 95px; height: 95px;
+            animation: kittyWink 3s infinite;
         }
         @keyframes kittyWink {
-            0%, 90% { opacity: 1; }
-            95% { opacity: 0.7; transform: translateY(-50%) scale(0.95); }
+            0%, 85% { transform: translateY(-50%) scale(1); }
+            90% { transform: translateY(-55%) scale(0.95); }
+            100% { transform: translateY(-50%) scale(1); }
         }
         
         .kitty-talk { 
-            font-size: 1.45em; font-weight: 800; color: #ff1493;
-            margin-bottom: 15px; margin-left: 110px;
+            font-size: 1.55em; font-weight: 900; 
+            background: linear-gradient(45deg, #ff1493, #ff69b4);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 18px; margin-left: 120px; position: relative;
         }
         .advice-text { 
-            font-size: 1.25em; color: #333; line-height: 1.5; margin-left: 110px;
+            font-size: 1.35em; color: #333; line-height: 1.5; 
+            margin-left: 120px; margin-bottom: 20px; font-weight: 600;
+        }
+        .kitty-compliment {
+            font-size: 1.1em; color: #ff69b4; font-weight: 700;
+            margin-left: 120px; position: relative; margin-top: 15px;
+            animation: sparkleText 2s ease-in-out infinite;
+        }
+        @keyframes sparkleText {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,105,180,0.5); }
+            50% { text-shadow: 0 0 25px rgba(255,105,180,0.8), 0 0 35px rgba(255,182,193,0.6); }
         }
         
         .stats { 
-            display: flex; justify-content: space-around; padding: 20px;
-            background: rgba(255,255,255,0.9); border-radius: 25px; margin: 20px 0;
-            box-shadow: 0 12px 35px rgba(255,182,193,0.2);
+            display: flex; justify-content: space-around; padding: 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,245,248,0.9));
+            border-radius: 30px; margin: 25px 0; box-shadow: 0 20px 60px rgba(255,182,193,0.3);
+            border: 3px solid rgba(255,105,180,0.4); backdrop-filter: blur(20px);
         }
-        .stat { color: #ff1493; font-weight: 700; font-size: 1.15em; }
+        .stat { 
+            color: #ff1493; font-weight: 800; font-size: 1.25em; 
+            text-shadow: 0 2px 10px rgba(255,105,180,0.3);
+        }
+        
+        .share-btn {
+            background: linear-gradient(45deg, #ff69b4, #ff1493, #ffb6c1) !important;
+            margin-top: 15px; font-size: 1.35em !important;
+        }
         
         .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
         .heart { 
-            position: absolute; font-size: 1.8em; 
-            animation: floatUp 4s ease-out forwards;
+            position: absolute; font-size: 2em; color: #ff1493;
+            animation: floatUp 4.5s ease-out forwards;
         }
         @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+            0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { transform: translateY(-120px) scale(1) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -119,20 +186,19 @@
         </div>
 
         <button class="generate-btn" :disabled="selectedEmojis.length < 3" @click="generateAdvice">
-            {{ selectedEmojis.length < 3 ? `Выбери ${3-selectedEmojis.length} стикера! 💖` : 'Мяу! Совет от Kitty! ✨' }}
+            {{ selectedEmojis.length < 3 ? `Выбери ещё ${3-selectedEmojis.length} стикера! 💖` : 'Мяу-мяу! Дай совет от Kitty! ✨' }}
         </button>
 
         <div v-if="currentAdvice" class="advice">
             <img src="kitty-wink.png" alt="Kitty wink">
             <div class="kitty-talk">😻 Kitty говорит:</div>
             <div class="advice-text">{{ currentAdvice }}</div>
-            <div style="margin-top: 20px; color: #ff69b4; font-weight: 600;">
-                Ириша — ты лучшая! 🐾💕
-            </div>
+            <div class="kitty-compliment">{{ compliments[Math.floor(Math.random() * compliments.length)] }}</div>
         </div>
 
-        <button v-if="currentAdvice" class="generate-btn" style="background: linear-gradient(45deg, #ff69b4, #ff1493);"
-            @click="shareAdvice">Поделиться в ТГ! 🌸</button>
+        <button v-if="currentAdvice" class="generate-btn share-btn" @click="shareAdvice">
+            📋 Скопировать и поделиться! 🌸
+        </button>
     </div>
 
     <div class="hearts" ref="heartsContainer"></div>
@@ -142,14 +208,37 @@
         
         createApp({
             setup() {
-                const kittyEmojis = ['😻','🐾','🎀','🌸','💕','⭐','🍓','✨','🎁','🍭'];
+                const kittyEmojis = ['😻','🐾','🎀','🌸','💕','⭐','🍓','✨','🎁','🍭','🧸','🌺','💖','🎂'];
                 const selectedEmojis = ref([]);
                 const currentAdvice = ref('');
                 const stats = ref({ todaySmiles: 0, totalSmiles: 0, lastDate: '' });
                 
-                const kittyActions = ['носи любимый бантик','ешь клубничку','танцуй','улыбайся','гуляй с мороженым','слушай музыку','рисуй сердечки','мечтай'];
-                const kittyDetails = ['с белым бантиком','под звёздами','с подружками','в розовом','с котиками','на пикнике'];
-                const kittyBonuses = ['ты суперзвезда!','Hello Kitty гордится тобой!','мяу-мяу класс!','самая милая!'];
+                const compliments = [
+                    'Ириша — ты лучшая! 🐾💕',
+                    'Ты суперзвезда! 🌟✨', 
+                    'Самая милая на свете! 😻🎀',
+                    'Hello Kitty тобой гордится! 💖🐾',
+                    'Ты делаешь мир ярче! 🌸💫',
+                    'Мяу-мяу, какая красотка! 🍓✨',
+                    'С тобой веселее всех! 🎀😻',
+                    'Ты — моя любимая звёздочка! ⭐💕'
+                ];
+                
+                const kittyActions = [
+                    'носи любимый бантик', 'ешь клубничный десерт', 'танцуй под попсу', 
+                    'улыбайся друзьям', 'гуляй с мороженым', 'слушай любимый плейлист', 
+                    'рисуй сердечки', 'носи розовые очки', 'обнимай котика', 
+                    'мечтай о сладостях', 'крась ногти в розовый', 'делай селфи'
+                ];
+                const kittyDetails = [
+                    'с белым бантиком', 'с клубничками', 'под звёздами', 'с подружками', 
+                    'в белых гольфиках', 'с плюшевыми игрушками', 'на пикнике', 
+                    'с блестящим лаком', 'с яблочным пирогом', 'в сердечках'
+                ];
+                const kittyBonuses = [
+                    'ты моя любимая!', 'Kitty тобой гордится!', 'мяу-мяу супер!', 
+                    'самая милая!', 'ты звезда!', 'супер-котёнок!', 'красивый бантик!'
+                ];
                 
                 const loadStats = () => {
                     const saved = localStorage.getItem('iraKittyStats');
@@ -182,25 +271,27 @@
                     stats.value.todaySmiles++; stats.value.totalSmiles++;
                     localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
                     
-                    for(let i = 0; i < 10; i++) {
+                    // Сердечки
+                    for(let i = 0; i < 12; i++) {
                         setTimeout(() => {
                             const heart = document.createElement('div');
                             heart.className = 'heart';
-                            heart.innerHTML = ['💖','✨','🌸','🐾'][Math.floor(Math.random()*4)];
+                            heart.innerHTML = ['💖','✨','🌸','🐾','🎀','😻'][Math.floor(Math.random()*6)];
                             heart.style.left = Math.random() * 100 + '%';
                             heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
                             document.querySelector('.hearts').appendChild(heart);
-                            setTimeout(() => heart.remove(), 4500);
+                            setTimeout(() => heart.remove(), 5000);
                         }, i * 100);
                     }
                 };
                 
-                const shareAdvice = () => {
-                    if (window.Telegram?.WebApp) {
-                        Telegram.WebApp.showAlert('Мяу-мяу! Совет сохранён! 🐾💕');
-                    } else {
-                        navigator.clipboard.writeText(currentAdvice.value);
-                        alert('Kitty совет скопирован! 💖');
+                const shareAdvice = async () => {
+                    const shareText = `😻 Kitty говорит Ирише: ${currentAdvice.value}\n${compliments[Math.floor(Math.random() * compliments.length)]}\n#HelloИриша`;
+                    try {
+                        await navigator.clipboard.writeText(shareText);
+                        alert('📋 Совету от Kitty скопирован! Вставь в ТГ или где хочешь 💕');
+                    } catch {
+                        alert('Совет готов: ' + shareText);
                     }
                 };
                 
@@ -208,12 +299,18 @@
                     loadStats();
                     if (window.Telegram?.WebApp) {
                         Telegram.WebApp.expand();
-                        Telegram.WebApp.MainButton.setText('Новый совет от Kitty! 😻')
-                            .setColor('#ff1493').show().onClick(generateAdvice);
+                        Telegram.WebApp.MainButton
+                            .setText('Новый совет от Kitty! 😻')
+                            .setColor('#ff1493')
+                            .show()
+                            .onClick(generateAdvice);
                     }
                 });
                 
-                return { kittyEmojis, selectedEmojis, currentAdvice, stats, toggleEmoji, generateAdvice, shareAdvice };
+                return { 
+                    kittyEmojis, selectedEmojis, currentAdvice, stats, 
+                    toggleEmoji, generateAdvice, shareAdvice, compliments 
+                };
             }
         }).mount('#app');
     </script>
