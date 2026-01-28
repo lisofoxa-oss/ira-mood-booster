@@ -10,7 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #fff5f7 url('bg-pattern.jpg') repeat;
+            background: #f8f9ff url('bg-pattern.jpg') repeat;
             min-height: 100vh; overflow-x: hidden;
         }
         #app { padding: 25px 20px; max-width: 400px; margin: 0 auto; }
@@ -78,7 +78,7 @@
         }
         .emoji-btn:disabled:not(.selected) { opacity: 0.6; cursor: not-allowed; }
         
-        .generate-btn {
+        .generate-btn, .share-btn {
             width: 100%; padding: 25px; border: none; border-radius: 40px;
             background: linear-gradient(45deg, #ff1493, #ff69b4, #ffc0cb); 
             background-size: 200% 200%; color: white; font-size: 1.45em; 
@@ -91,7 +91,7 @@
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-        .generate-btn:hover:not(:disabled) { 
+        .generate-btn:hover:not(:disabled), .share-btn:hover { 
             transform: translateY(-5px) scale(1.03); 
             box-shadow: 0 25px 60px rgba(255,20,147,0.6);
         }
@@ -136,6 +136,16 @@
             50% { text-shadow: 0 0 25px rgba(255,105,180,0.8), 0 0 35px rgba(255,182,193,0.6); }
         }
         
+        .copy-status {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(129, 199, 132, 0.8));
+            color: white; padding: 12px 20px; border-radius: 25px;
+            font-weight: 600; font-size: 1em; margin-top: 15px;
+            opacity: 0; transform: translateY(20px); transition: all 0.4s;
+        }
+        .copy-status.show {
+            opacity: 1; transform: translateY(0);
+        }
+        
         .stats { 
             display: flex; justify-content: space-around; padding: 25px;
             background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,245,248,0.9));
@@ -145,11 +155,6 @@
         .stat { 
             color: #ff1493; font-weight: 800; font-size: 1.25em; 
             text-shadow: 0 2px 10px rgba(255,105,180,0.3);
-        }
-        
-        .share-btn {
-            background: linear-gradient(45deg, #ff69b4, #ff1493, #ffb6c1) !important;
-            margin-top: 15px; font-size: 1.35em !important;
         }
         
         .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
@@ -196,48 +201,53 @@
             <div class="kitty-compliment">{{ compliments[Math.floor(Math.random() * compliments.length)] }}</div>
         </div>
 
-        <button v-if="currentAdvice" class="generate-btn share-btn" @click="shareAdvice">
-            📋 Скопировать и поделиться! 🌸
+        <button v-if="currentAdvice" class="share-btn" @click="shareAdvice">
+            📋 Скопировать совет
         </button>
+        <div v-if="copyStatus" class="copy-status" :class="{ show: copyStatus.show }" ref="copyStatusEl">
+            ✅ Ссылка скопирована! Вставь в чат 💕
+        </div>
     </div>
 
     <div class="hearts" ref="heartsContainer"></div>
 
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, onMounted, nextTick } = Vue;
         
         createApp({
             setup() {
-                const kittyEmojis = ['😻','🐾','🎀','🌸','💕','⭐','🍓','✨','🎁','🍭','🧸','🌺','💖','🎂'];
+                const kittyEmojis = ['😻','🐾','🎀','🌸','💕','⭐','🍓','✨','🎁','🍭','🧸','🌺','💖','🎂','🎀','❄️'];
                 const selectedEmojis = ref([]);
                 const currentAdvice = ref('');
                 const stats = ref({ todaySmiles: 0, totalSmiles: 0, lastDate: '' });
+                const copyStatus = ref({ show: false });
                 
                 const compliments = [
                     'Ириша — ты лучшая! 🐾💕',
                     'Ты суперзвезда! 🌟✨', 
                     'Самая милая на свете! 😻🎀',
-                    'Hello Kitty тобой гордится! 💖🐾',
+                    'Kitty тобой гордится! 💖🐾',
                     'Ты делаешь мир ярче! 🌸💫',
                     'Мяу-мяу, какая красотка! 🍓✨',
                     'С тобой веселее всех! 🎀😻',
                     'Ты — моя любимая звёздочка! ⭐💕'
                 ];
                 
+                // Зимние осмысленные советы
                 const kittyActions = [
-                    'носи любимый бантик', 'ешь клубничный десерт', 'танцуй под попсу', 
-                    'улыбайся друзьям', 'гуляй с мороженым', 'слушай любимый плейлист', 
-                    'рисуй сердечки', 'носи розовые очки', 'обнимай котика', 
-                    'мечтай о сладостях', 'крась ногти в розовый', 'делай селфи'
+                    'кутайся в тёплый плед', 'пей горячий шоколад', 'слушай уютную музыку',
+                    'смотри милые видео', 'рисуй снежинки', 'носи пушистые носочки',
+                    'печь имбирное печенье', 'делай снежки', 'смотреть новогодние фильмы',
+                    'обнимай котика', 'улыбайся в окно', 'танцевать под лампочки'
                 ];
                 const kittyDetails = [
-                    'с белым бантиком', 'с клубничками', 'под звёздами', 'с подружками', 
-                    'в белых гольфиках', 'с плюшевыми игрушками', 'на пикнике', 
-                    'с блестящим лаком', 'с яблочным пирогом', 'в сердечках'
+                    'с какао', 'у окна со снегом', 'с котиком', 'под гирляндой',
+                    'в тёплых носочках', 'с мандаринками', 'под пледом',
+                    'с горячими напитками', 'в свитере с оленями', 'с друзьями'
                 ];
                 const kittyBonuses = [
-                    'ты моя любимая!', 'Kitty тобой гордится!', 'мяу-мяу супер!', 
-                    'самая милая!', 'ты звезда!', 'супер-котёнок!', 'красивый бантик!'
+                    'ты создаёшь уют!', 'тепло от твоей улыбки!', 'зима с тобой волшебная!',
+                    'самая тёплая душа!', 'супер-зимняя звезда!', 'уютнее всех!'
                 ];
                 
                 const loadStats = () => {
@@ -271,12 +281,11 @@
                     stats.value.todaySmiles++; stats.value.totalSmiles++;
                     localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
                     
-                    // Сердечки
                     for(let i = 0; i < 12; i++) {
                         setTimeout(() => {
                             const heart = document.createElement('div');
                             heart.className = 'heart';
-                            heart.innerHTML = ['💖','✨','🌸','🐾','🎀','😻'][Math.floor(Math.random()*6)];
+                            heart.innerHTML = ['💖','✨','❄️','🐾','🎀','😻'][Math.floor(Math.random()*6)];
                             heart.style.left = Math.random() * 100 + '%';
                             heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
                             document.querySelector('.hearts').appendChild(heart);
@@ -286,12 +295,19 @@
                 };
                 
                 const shareAdvice = async () => {
-                    const shareText = `😻 Kitty говорит Ирише: ${currentAdvice.value}\n${compliments[Math.floor(Math.random() * compliments.length)]}\n#HelloИриша`;
+                    const shareText = `😻 Kitty говорит Ирише: ${currentAdvice.value}\n${compliments[Math.floor(Math.random() * compliments.length)]}`;
                     try {
                         await navigator.clipboard.writeText(shareText);
-                        alert('📋 Совету от Kitty скопирован! Вставь в ТГ или где хочешь 💕');
+                        copyStatus.value.show = true;
+                        setTimeout(() => {
+                            copyStatus.value.show = false;
+                        }, 3000);
                     } catch {
-                        alert('Совет готов: ' + shareText);
+                        copyStatus.value.show = true;
+                        document.querySelector('.copy-status').textContent = 'Ошибка копирования!';
+                        setTimeout(() => {
+                            copyStatus.value.show = false;
+                        }, 2000);
                     }
                 };
                 
@@ -308,7 +324,7 @@
                 });
                 
                 return { 
-                    kittyEmojis, selectedEmojis, currentAdvice, stats, 
+                    kittyEmojis, selectedEmojis, currentAdvice, stats, copyStatus,
                     toggleEmoji, generateAdvice, shareAdvice, compliments 
                 };
             }
