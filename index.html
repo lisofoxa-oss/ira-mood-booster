@@ -672,14 +672,6 @@
                         themeSwitchSound.value.play().catch(e => console.log('Sound blocked:', e));
                     }
                     
-                    // Сохраняем выбранные эмодзи для передачи
-                    if (selectedEmojis.value.length > 0) {
-                        localStorage.setItem('kittyStyleTransition', JSON.stringify({
-                            emojis: selectedEmojis.value,
-                            timestamp: Date.now()
-                        }));
-                    }
-                    
                     // Плавный переход
                     const overlay = document.createElement('div');
                     overlay.style.cssText = `
