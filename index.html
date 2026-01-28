@@ -760,18 +760,7 @@
                 // Инициализация
                 onMounted(() => {
                     loadStats();
-                    // Восстанавливаем выбранные эмодзи после перехода
-                    const transitionData = localStorage.getItem('kittyStyleTransition');
-                    if (transitionData) {
-                        const data = JSON.parse(transitionData);
-                        // Проверяем, что данные не старше 5 секунд
-                        if (Date.now() - data.timestamp < 5000) {
-                            selectedEmojis.value = data.emojis;
-                            updateKittyMood();
-                        }
-                        // Удаляем данные после использования
-                        localStorage.removeItem('kittyStyleTransition');
-                    }
+
                     // Инициализация звуков
                     [meowSound, clickSound, bgMusic, sparkleSound].forEach(sound => {
                         if (sound.value) sound.value.load();
