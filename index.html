@@ -29,10 +29,6 @@
         }
         .music-toggle:hover { transform: scale(1.1) rotate(10deg); }
         .music-toggle.active { background: linear-gradient(135deg, #4caf50, #66bb6a); }
-        @keyframes musicPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.12); }
-        }
         
         .header { 
             display: flex; align-items: center; margin: 80px 0 30px 0;
@@ -165,7 +161,7 @@
             text-shadow: 0 2px 10px rgba(255,105,180,0.3);
         }
         
-        .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
+        .hearts { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; width: 100%; height: 100%; }
         .heart { 
             position: absolute; font-size: 2em; color: #ff1493;
             animation: floatUp 4.5s ease-out forwards;
@@ -176,6 +172,9 @@
             85% { opacity: 1; }
             100% { transform: translateY(-120px) scale(1) rotate(360deg); opacity: 0; }
         }
+        
+        /* Скрыть аудио элементы */
+        audio { display: none; }
     </style>
 </head>
 <body>
@@ -185,7 +184,7 @@
         </button>
 
         <div class="header">
-            <img src="kitty-head.png" alt="Kitty">
+            <img src="kitty-head.png" alt="Kitty" onerror="this.src='https://via.placeholder.com/100/ff69b4/ffffff?text=Kitty'">
             <h1>Hello Ириша! 🎀</h1>
         </div>
         
@@ -197,64 +196,72 @@
         <div class="emoji-grid">
             <button v-for="(emoji, i) in kittyEmojis" :key="i"
                 class="emoji-btn" :class="{ selected: selectedEmojis.includes(emoji) }"
-                @click="toggleEmoji(emoji)" :disabled="selectedEmojis.length >= 3">
+                @click="toggleEmoji(emoji)" :disabled="selectedEmojis.length >= 3 && !selectedEmojis.includes(emoji)">
                 {{ emoji }}
             </button>
         </div>
 
         <button class="generate-btn" :disabled="selectedEmojis.length < 3" @click="generateAdvice">
-            {{ selectedEmojis.length < 3 ? `Выбери ещё ${3-selectedEmojis.length} стикера! 💖` : 'Мяу-мяу! Дай совет от Kitty! ✨' }}
+            {{ selectedEmojis.length < 3 ? `Выбери ещё ${3 - selectedEmojis.length} стикера! 💖` : 'Мяу-мяу! Дай совет от Kitty! ✨' }}
         </button>
 
         <div v-if="currentAdvice" class="advice">
-            <img src="kitty-wink.png" alt="Kitty wink">
+            <img src="kitty-wink.png" alt="Kitty wink" onerror="this.src='https://via.placeholder.com/95/ff69b4/ffffff?text=😻'">
             <div class="kitty-talk">😻 Kitty говорит:</div>
             <div class="advice-text">{{ currentAdvice }}</div>
-            <div class="kitty-compliment">{{ compliments[Math.floor(Math.random() * compliments.length)] }}</div>
+            <div class="kitty-compliment">{{ currentCompliment }}</div>
         </div>
 
         <button v-if="currentAdvice" class="share-btn" @click="shareAdvice">
             📋 Скопировать совет
         </button>
-        <div v-if="copyStatus.show" class="copy-status show">
+        <div v-if="copyStatus.show" class="copy-status" :class="{ show: copyStatus.show }">
             ✅ Совет скопирован! Вставь в чат 💕
         </div>
+        
+        <!-- Контейнер для анимации сердец -->
+        <div class="hearts" ref="heartsContainer"></div>
+        
+        <!-- Аудио элементы (скрыты) -->
+        <audio ref="meowSound" preload="auto">
+            <source src="meow.mp3" type="audio/mpeg">
+            <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_3534ec662b.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="clickSound" preload="auto">
+            <source src="click.mp3" type="audio/mpeg">
+            <source src="https://cdn.pixabay.com/audio/2022/03/16/audio_6c1a96314c.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="bgMusic" loop preload="auto">
+            <source src="pink-chill.mp3" type="audio/mpeg">
+            <source src="https://cdn.pixabay.com/audio/2022/02/22/audio_5b8d5d8a9b.mp3" type="audio/mpeg">
+        </audio>
+        <audio ref="sparkleSound" preload="auto">
+            <source src="sparkle.mp3" type="audio/mpeg">
+            <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_7b4d1c7d9c.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
-    <!-- АУДИО -->
-    <audio ref="meowSound" preload="auto">
-        <source src="meow.mp3" type="audio/mpeg">
-    </audio>
-    <audio ref="clickSound" preload="auto">
-        <source src="click.mp3" type="audio/mpeg">
-    </audio>
-    <audio ref="bgMusic" loop preload="auto">
-        <source src="pink-chill.mp3" type="audio/mpeg">
-    </audio>
-    <audio ref="sparkleSound" preload="auto">
-        <source src="sparkle.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="hearts" ref="heartsContainer"></div>
-
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, onMounted, computed } = Vue;
         
         createApp({
             setup() {
                 const kittyEmojis = ['😻','🐾','🎀','🌸','💕','⭐','🍓','✨','🎁','🍭','🧸','🌺','💖','🎂','❄️','🔔'];
                 const selectedEmojis = ref([]);
                 const currentAdvice = ref('');
+                const currentCompliment = ref('');
                 const stats = ref({ todaySmiles: 0, totalSmiles: 0, lastDate: '' });
                 const copyStatus = ref({ show: false });
                 const isMusicOn = ref(false);
+                const heartsContainer = ref(null);
                 
-                // АУДИО
+                // АУДИО РЕФЫ
                 const meowSound = ref(null);
                 const clickSound = ref(null);
                 const bgMusic = ref(null);
                 const sparkleSound = ref(null);
                 
+                // Комплименты и советы
                 const compliments = [
                     'Ириша — ты лучшая! 🐾💕','Ты суперзвезда! 🌟✨','Самая милая на свете! 😻🎀',
                     'Kitty тобой гордится! 💖🐾','Ты делаешь мир ярче! 🌸💫','Мяу-мяу, какая красотка! 🍓✨',
@@ -277,25 +284,28 @@
                     'самая тёплая душа!', 'супер-зимняя звезда!', 'уютнее всех!'
                 ];
                 
+                // Единая функция проигрывания звука
                 const playSound = (soundRef) => {
-                    if (isMusicOn.value && soundRef.value) {
-                        soundRef.value.currentTime = 0;
-                        soundRef.value.volume = 0.4;
-                        soundRef.value.play().catch(() => {});
-                    }
+                    if (!soundRef.value) return;
+                    
+                    // Звуки проигрываются всегда, даже если фоновая музыка выключена
+                    soundRef.value.currentTime = 0;
+                    soundRef.value.volume = 0.4;
+                    soundRef.value.play().catch(e => {
+                        console.log('Sound play blocked:', e.message);
+                    });
                 };
                 
+                // Переключение фоновой музыки
                 const toggleMusic = () => {
                     isMusicOn.value = !isMusicOn.value;
-                    console.log('Music toggled:', isMusicOn.value); // DEBUG
                     
                     if (bgMusic.value) {
                         bgMusic.value.volume = 0.15;
                         if (isMusicOn.value) {
-                            bgMusic.value.play().then(() => {
-                                console.log('Background music started'); // DEBUG
-                            }).catch(e => {
-                                console.log('Music autoplay blocked:', e); // DEBUG
+                            bgMusic.value.play().catch(e => {
+                                console.log('Background music autoplay blocked:', e);
+                                // Покажем подсказку пользователю?
                             });
                         } else {
                             bgMusic.value.pause();
@@ -303,94 +313,175 @@
                     }
                 };
                 
+                // Загрузка статистики
                 const loadStats = () => {
-                    const saved = localStorage.getItem('iraKittyStats');
-                    if (saved) {
-                        stats.value = JSON.parse(saved);
+                    try {
+                        const saved = localStorage.getItem('iraKittyStats');
                         const today = new Date().toDateString();
-                        if (stats.value.lastDate !== today) {
-                            stats.value.todaySmiles = 0;
-                            stats.value.lastDate = today;
+                        
+                        if (saved) {
+                            stats.value = JSON.parse(saved);
+                            // Сброс ежедневного счётчика
+                            if (stats.value.lastDate !== today) {
+                                stats.value.todaySmiles = 0;
+                                stats.value.lastDate = today;
+                            }
+                        } else {
+                            // Инициализация новой статистики
+                            stats.value = {
+                                todaySmiles: 0,
+                                totalSmiles: 0,
+                                lastDate: today
+                            };
                         }
-                    } else {
-                        stats.value.lastDate = new Date().toDateString();
+                        // Сохраняем для гарантии корректной структуры
                         localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
+                    } catch (e) {
+                        console.error('Error loading stats:', e);
+                        // Инициализация при ошибке
+                        stats.value = {
+                            todaySmiles: 0,
+                            totalSmiles: 0,
+                            lastDate: new Date().toDateString()
+                        };
                     }
                 };
                 
+                // Переключение эмодзи
                 const toggleEmoji = (emoji) => {
                     playSound(clickSound);
+                    
                     const idx = selectedEmojis.value.indexOf(emoji);
-                    if (idx > -1) selectedEmojis.value.splice(idx, 1);
-                    else if (selectedEmojis.value.length < 3) selectedEmojis.value.push(emoji);
+                    if (idx > -1) {
+                        // Удаляем если уже выбран
+                        selectedEmojis.value.splice(idx, 1);
+                    } else if (selectedEmojis.value.length < 3) {
+                        // Добавляем если меньше 3
+                        selectedEmojis.value.push(emoji);
+                    }
                 };
                 
+                // Генерация совета
                 const generateAdvice = () => {
                     playSound(sparkleSound);
                     setTimeout(() => playSound(meowSound), 300);
                     
-                    const actionIdx = Math.floor(Math.random() * kittyActions.length);
-                    const detailIdx = Math.floor(Math.random() * kittyDetails.length);
-                    const bonusIdx = Math.floor(Math.random() * kittyBonuses.length);
+                    // Генерация совета
+                    const action = kittyActions[Math.floor(Math.random() * kittyActions.length)];
+                    const detail = kittyDetails[Math.floor(Math.random() * kittyDetails.length)];
+                    const bonus = kittyBonuses[Math.floor(Math.random() * kittyBonuses.length)];
+                    currentAdvice.value = `${action} ${detail}, ${bonus}`;
                     
-                    currentAdvice.value = `${kittyActions[actionIdx]} ${kittyDetails[detailIdx]}, ${kittyBonuses[bonusIdx]}`;
+                    // Выбираем комплимент для отображения и копирования
+                    currentCompliment.value = compliments[Math.floor(Math.random() * compliments.length)];
                     
-                    stats.value.todaySmiles++; stats.value.totalSmiles++;
-                    localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
+                    // Обновление статистики
+                    stats.value.todaySmiles++;
+                    stats.value.totalSmiles++;
+                    try {
+                        localStorage.setItem('iraKittyStats', JSON.stringify(stats.value));
+                    } catch (e) {
+                        console.error('Error saving stats:', e);
+                    }
                     
-                    for(let i = 0; i < 12; i++) {
-                        setTimeout(() => {
-                            const heart = document.createElement('div');
-                            heart.className = 'heart';
-                            heart.innerHTML = ['💖','✨','❄️','🐾','🎀','😻'][Math.floor(Math.random()*6)];
-                            heart.style.left = Math.random() * 100 + '%';
-                            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                            document.querySelector('.hearts').appendChild(heart);
-                            setTimeout(() => heart.remove(), 5000);
-                        }, i * 100);
+                    // Анимация сердец
+                    if (heartsContainer.value) {
+                        // Очистка старых сердец
+                        heartsContainer.value.innerHTML = '';
+                        
+                        for(let i = 0; i < 12; i++) {
+                            setTimeout(() => {
+                                const heart = document.createElement('div');
+                                heart.className = 'heart';
+                                heart.innerHTML = ['💖','✨','❄️','🐾','🎀','😻'][Math.floor(Math.random() * 6)];
+                                heart.style.left = `${Math.random() * 100}%`;
+                                heart.style.animationDuration = `${(Math.random() * 2 + 3).toFixed(1)}s`;
+                                heartsContainer.value.appendChild(heart);
+                                
+                                // Удаляем сердце после анимации
+                                setTimeout(() => {
+                                    if (heart.parentNode) {
+                                        heart.parentNode.removeChild(heart);
+                                    }
+                                }, 5000);
+                            }, i * 150);
+                        }
                     }
                 };
-const playSound = (soundRef) => {
-    if (isMusicOn.value && soundRef.value) {
-        console.log('Playing sound:', soundRef); // DEBUG
-        soundRef.value.currentTime = 0;
-        soundRef.value.volume = 0.4;
-        soundRef.value.play().catch(e => {
-            console.log('Sound blocked:', e); // DEBUG
-        });
-    }
-};        
-
                 
+                // Копирование совета
                 const shareAdvice = async () => {
                     playSound(clickSound);
-                    const shareText = `😻 Kitty говорит Ирише: ${currentAdvice.value}\n${compliments[Math.floor(Math.random() * compliments.length)]}`;
+                    
+                    // Формируем текст с текущим комплиментом
+                    const shareText = `😻 Kitty говорит Ирише: ${currentAdvice.value}\n${currentCompliment.value}`;
+                    
                     try {
                         await navigator.clipboard.writeText(shareText);
-                        copyStatus.value.show = true;
-                        setTimeout(() => { copyStatus.value.show = false; }, 3000);
-                    } catch(e) {}
+                        
+                        // Показ статуса с анимацией
+                        copyStatus.value.show = false;
+                        // Небольшая задержка для сброса анимации
+                        setTimeout(() => {
+                            copyStatus.value.show = true;
+                            setTimeout(() => {
+                                copyStatus.value.show = false;
+                            }, 3000);
+                        }, 50);
+                    } catch (e) {
+                        console.error('Copy failed:', e);
+                        alert('Не удалось скопировать текст. Попробуйте выделить и скопировать вручную.');
+                    }
                 };
                 
+                // Инициализация
                 onMounted(() => {
                     loadStats();
+                    
+                    // Инициализация звуков (для сброса состояния)
+                    [meowSound, clickSound, bgMusic, sparkleSound].forEach(sound => {
+                        if (sound.value) {
+                            sound.value.load();
+                        }
+                    });
+                    
+                    // Интеграция с Telegram WebApp
                     if (window.Telegram?.WebApp) {
                         Telegram.WebApp.expand();
-                        Telegram.WebApp.MainButton
-                            .setText('Новый совет от Kitty! 😻')
-                            .setColor('#ff1493')
-                            .show()
-                            .onClick(() => {
-                                playSound(clickSound);
-                                generateAdvice();
-                            });
+                        
+                        // Проверка существования главной кнопки
+                        if (Telegram.WebApp.MainButton) {
+                            Telegram.WebApp.MainButton
+                                .setText('Новый совет от Kitty! 😻')
+                                .setColor('#ff1493')
+                                .show()
+                                .onClick(() => {
+                                    playSound(clickSound);
+                                    // Сбрасываем выбранные эмодзи для нового совета
+                                    selectedEmojis.value = [];
+                                    generateAdvice();
+                                });
+                        }
                     }
                 });
         
                 return { 
-                    kittyEmojis, selectedEmojis, currentAdvice, stats, copyStatus, isMusicOn,
-                    toggleEmoji, generateAdvice, shareAdvice, compliments, toggleMusic,
-                    meowSound, clickSound, bgMusic, sparkleSound
+                    kittyEmojis, 
+                    selectedEmojis, 
+                    currentAdvice,
+                    currentCompliment,
+                    stats, 
+                    copyStatus, 
+                    isMusicOn,
+                    heartsContainer,
+                    toggleEmoji, 
+                    generateAdvice, 
+                    shareAdvice, 
+                    toggleMusic,
+                    meowSound, 
+                    clickSound, 
+                    bgMusic, 
+                    sparkleSound
                 };
             }
         }).mount('#app');
